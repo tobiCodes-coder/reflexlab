@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reaction Time Test — ReflexLab</title>
-  <meta name="description" content="Test your reaction time in milliseconds. Free, no signup, runs in your browser." />
+  <meta name="description" content="Test your reaction time with percentile ranking and statistics. Compare yourself with average users and gamers. Free, no signup." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
   <link rel="stylesheet" href="../../css/test.css" />
@@ -12,34 +12,48 @@
 <body>
   <main class="container">
     <div class="game-wrap">
-      <a class="back-link" href="../../index.html">← Back to all tests</a>
+      <div class="crumb"><a href="../../index.html">ReflexLab</a> &gt; Reaction Time</div>
 
-      <header class="test-head">
-        <h1>Reaction Time</h1>
-        <p>Click the box the moment it turns green. How fast are you?</p>
-      </header>
+      <!-- Result card -->
+      <div class="result-card">
+        <div class="title">Reaction Time</div>
+        <div class="big" id="bigScore">—</div>
+        <div class="unit">ms</div>
+        <div class="pct" id="pctText">Play to see your ranking</div>
+        <div><span class="best-chip" id="bestChip">No record yet</span></div>
+        <div class="card-actions">
+          <button class="btn btn-primary" id="btnPlay">Play</button>
+          <button class="btn btn-ghost" id="btnShare">Share</button>
+        </div>
+      </div>
 
-      <!-- Game area: click korar jayga -->
+      <!-- Play area -->
       <div id="gameBox" class="game-box">Click to start</div>
+      <div id="roundInfo" class="score-label"></div>
 
-      <!-- Score: result er por dekhabe -->
-      <div id="scoreWrap" style="display:none;">
-        <div class="score-label">Your reaction time</div>
-        <div id="scoreBig" class="score-big">0 ms</div>
+      <!-- Statistics -->
+      <div class="stats-card">
+        <h2>Reaction Time Statistics</h2>
+        <div class="chart-legend">
+          <span><i class="dot you"></i> You</span>
+          <span><i class="dot avg"></i> Average users</span>
+          <span><i class="dot gamers"></i> Gamers</span>
+        </div>
+        <svg id="chart" viewBox="0 0 600 200">
+          <path id="avgCurve" fill="rgba(148,163,184,0.2)" stroke="#94a3b8" stroke-width="1.5"></path>
+          <path id="gamerCurve" fill="rgba(74,222,128,0.12)" stroke="#4ade80" stroke-width="1.5"></path>
+          <line id="youLine" y1="0" y2="200" stroke="#22d3ee" stroke-width="2" style="display:none"></line>
+          <text id="youLabel" fill="#22d3ee" font-size="12" style="display:none"></text>
+        </svg>
+
+        <div class="hist-title">YOUR PROGRESS (last 5 sessions — up = better)</div>
+        <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
       </div>
 
-      <!-- Buttons + best badge -->
-      <div class="result-row">
-        <button id="btnRetry" class="btn btn-primary">Try again</button>
-        <button id="btnShare" class="btn btn-ghost">Share score</button>
-        <span id="bestBadge" class="badge"></span>
-      </div>
-
-      <p id="msg" class="msg"></p>
+      <p class="msg" id="msg"></p>
     </div>
   </main>
 
-  <!-- Order: age utils, tarpor ei test er logic -->
   <script src="../../js/utils.js"></script>
   <script src="reaction.js"></script>
 </body>

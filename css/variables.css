@@ -1,60 +1,50 @@
 /* ============================================
    REFLEXLAB - DESIGN TOKENS
-   Sob value ekhon e. Color change = shudhu ei file.
    ============================================ */
 
 :root {
+  /* Colors */
+  --bg: #0a0e1a;
+  --card: #111827;
+  --card-hover: #1a2332;
+  --border: #232d3f;
 
-  /* --- Colors: background --- */
-  --bg: #0b1020;          /* main page background (dark navy) */
-  --card: #141a2e;        /* card / box background */
-  --card-hover: #1b2340;  /* card hover e */
-  --border: #232c4a;      /* sob border */
+  --text: #e5eefb;
+  --text-2: #94a3b8;
 
-  /* --- Colors: text --- */
-  --text: #e6eaf5;        /* main text (almost white) */
-  --text-2: #9aa5c1;      /* light text (description) */
+  --primary: #22d3ee;
+  --primary-dark: #0ea5c4;
+  --primary-soft: rgba(34, 211, 238, 0.12);
 
-  /* --- Colors: brand --- */
-  --primary: #22d3ee;       /* main brand color (cyan) */
-  --primary-dark: #0ea5c4;  /* button hover */
-  --primary-soft: rgba(34, 211, 238, 0.12); /* light cyan bg */
+  --success: #4ade80;
+  --danger: #f87171;
 
-  /* --- Colors: feedback --- */
-  --success: #4ade80;  /* good / new record */
-  --danger: #f87171;   /* error / wait */
-  --warn: #fbbf24;     /* warning */
+  /* Spacing */
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+  --space-12: 72px;
 
-  /* --- Fonts --- */
-  --font-main: 'Segoe UI', system-ui, sans-serif;
-  --font-mono: ui-monospace, 'Courier New', monospace; /* score er jonno */
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* --- Font sizes --- */
   --text-xs: 12px;
   --text-sm: 14px;
   --text-base: 16px;
   --text-lg: 18px;
   --text-xl: 24px;
   --text-2xl: 32px;
-  --text-3xl: 40px;
+  --text-3xl: 44px;
 
-  /* --- Spacing --- */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-12: 48px;
-
-  /* --- Radius --- */
+  /* Radius */
   --radius-sm: 8px;
-  --radius-md: 12px;
+  --radius-md: 14px;
   --radius-full: 999px;
 
-  /* --- Shadow --- */
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-
-  /* --- Transition speed --- */
+  /* Motion */
   --speed: 0.2s;
 }

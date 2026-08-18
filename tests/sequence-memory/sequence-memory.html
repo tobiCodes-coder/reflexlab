@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sequence Memory Test — ReflexLab</title>
-  <meta name="description" content="Memorize growing number sequences. How many levels can you clear? Free brain training, no signup." />
+  <meta name="description" content="Remember the growing sequence. Test your short-term memory and compare with others. Free, no signup." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
   <link rel="stylesheet" href="../../css/test.css" />
@@ -12,38 +12,43 @@
 <body>
   <main class="container">
     <div class="game-wrap">
-      <a class="back-link" href="../../index.html">← Back to all tests</a>
+      <div class="crumb"><a href="../../index.html">ReflexLab</a> &gt; Sequence Memory</div>
 
-      <header class="test-head">
-        <h1>Sequence Memory</h1>
-        <p>Memorize the number sequence. It grows by one digit each level.</p>
-      </header>
-
-      <!-- Number dekhabe ekhane -->
-      <div id="gameBox" class="game-box">Click to start</div>
-
-      <!-- Input phase e ei input dekhabe -->
-      <div id="inputWrap" class="input-row" style="display:none;">
-        <input id="seqInput" class="type-input" type="text" inputmode="numeric"
-          maxlength="30" placeholder="Type the sequence..." autocomplete="off" />
+      <div class="result-card">
+        <div class="title">Sequence Memory</div>
+        <div class="big" id="bigScore">—</div>
+        <div class="unit">levels</div>
+        <div class="pct" id="pctText">Play to see your ranking</div>
+        <div><span class="best-chip" id="bestChip">No record yet</span></div>
+        <div class="card-actions">
+          <button class="btn btn-primary" id="btnPlay">Play</button>
+          <button class="btn btn-ghost" id="btnShare">Share</button>
+        </div>
       </div>
 
-      <!-- Final score -->
-      <div id="scoreWrap" style="display:none;">
-        <div class="score-label">Levels cleared</div>
-        <div id="scoreBig" class="score-big">0</div>
+      <div id="grid" class="mem-grid" style="grid-template-columns: repeat(3, 1fr); max-width: 320px; margin: 0 auto;"></div>
+      <div id="roundInfo" class="score-label"></div>
+
+      <div class="stats-card">
+        <h2>Sequence Memory Statistics</h2>
+        <div class="chart-legend">
+          <span><i class="dot you"></i> You</span>
+          <span><i class="dot avg"></i> Average users</span>
+          <span><i class="dot gamers"></i> Elite memory</span>
+        </div>
+        <svg id="chart" viewBox="0 0 600 200">
+          <path id="avgCurve" fill="rgba(148,163,184,0.2)" stroke="#94a3b8" stroke-width="1.5"></path>
+          <path id="proCurve" fill="rgba(74,222,128,0.12)" stroke="#4ade80" stroke-width="1.5"></path>
+          <line id="youLine" y1="0" y2="200" stroke="#22d3ee" stroke-width="2" style="display:none"></line>
+          <text id="youLabel" fill="#22d3ee" font-size="12" style="display:none"></text>
+        </svg>
+        <div class="hist-title">YOUR PROGRESS (last 5 sessions)</div>
+        <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
       </div>
 
-      <div class="result-row">
-        <button id="btnRetry" class="btn btn-primary">Try again</button>
-        <button id="btnShare" class="btn btn-ghost">Share score</button>
-        <span id="bestBadge" class="badge"></span>
-      </div>
-
-      <p id="msg" class="msg"></p>
+      <p class="msg" id="msg"></p>
     </div>
   </main>
-
   <script src="../../js/utils.js"></script>
   <script src="sequence-memory.js"></script>
 </body>

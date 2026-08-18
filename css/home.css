@@ -1,33 +1,40 @@
 /* ============================================
-   REFLEXLAB - HOMEPAGE STYLES
-   Shudhu index.html: hero + test cards
+   REFLEXLAB - HOMEPAGE
    ============================================ */
 
-/* --- Hero section --- */
-.hero {
-  text-align: center;
-  margin-bottom: var(--space-8);
-}
-.hero h1 {
-  font-size: var(--text-3xl);
-  margin-bottom: var(--space-2);
-}
+.hero { text-align: center; margin-bottom: var(--space-8); }
+.hero h1 { font-size: var(--text-3xl); margin-bottom: var(--space-3); }
 .hero h1 span { color: var(--primary); }
 .hero p {
   color: var(--text-2);
-  max-width: 520px;
+  max-width: 560px;
   margin: 0 auto;
   font-size: var(--text-base);
 }
 
-/* --- Test cards grid --- */
+/* Facts strip */
+.facts {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  margin: var(--space-6) 0;
+  flex-wrap: wrap;
+}
+.fact { text-align: center; }
+.fact .num {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  color: var(--primary);
+}
+.fact .lbl { font-size: var(--text-xs); color: var(--text-2); }
+
+/* Test grid */
 .test-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--space-4);
 }
-
-/* --- Ekta card --- */
 .test-card {
   display: block;
   background: linear-gradient(135deg, var(--card) 0%, var(--card-hover) 100%);
@@ -40,31 +47,21 @@
   position: relative;
   overflow: hidden;
 }
-
-/* Card er upore subtle glow effect */
 .test-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--primary) 0%, transparent 100%);
   opacity: 0;
   transition: opacity 0.3s;
 }
-
 .test-card:hover {
   transform: translateY(-6px);
   border-color: var(--primary);
   box-shadow: 0 12px 32px rgba(34, 211, 238, 0.15);
 }
-
-.test-card:hover::before {
-  opacity: 1;
-}
-
-/* --- Icon container --- */
+.test-card:hover::before { opacity: 1; }
 .test-card .icon-wrap {
   width: 48px;
   height: 48px;
@@ -76,25 +73,9 @@
   margin-bottom: var(--space-3);
   color: var(--primary);
 }
-
-.test-card .icon-wrap svg {
-  width: 24px;
-  height: 24px;
-}
-
-.test-card h3 { 
-  font-size: var(--text-lg); 
-  margin-bottom: var(--space-2);
-  font-weight: 700;
-}
-
-.test-card p { 
-  font-size: var(--text-sm); 
-  color: var(--text-2);
-  line-height: 1.5;
-  margin-bottom: var(--space-4);
-}
-
+.test-card .icon-wrap svg { width: 24px; height: 24px; }
+.test-card h3 { font-size: var(--text-lg); margin-bottom: var(--space-2); font-weight: 700; }
+.test-card p { font-size: var(--text-sm); color: var(--text-2); line-height: 1.5; margin-bottom: var(--space-4); }
 .test-card .best {
   font-size: var(--text-xs);
   color: var(--primary);
@@ -105,41 +86,13 @@
   display: inline-block;
   font-weight: 600;
 }
+.test-card.soon { opacity: 0.5; cursor: not-allowed; }
+.test-card.soon:hover { transform: none; border-color: var(--border); box-shadow: none; }
+.test-card.soon::before { display: none; }
 
-/* --- Coming soon card (dim) --- */
-.test-card.soon { 
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.test-card.soon:hover {
-  transform: none;
-  border-color: var(--border);
-  box-shadow: none;
-}
-.test-card.soon::before {
-  display: none;
-}
-
-/* --- Mobile --- */
-@media (max-width: 640px) {
-  .hero h1 { font-size: var(--text-2xl); }
-  .test-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ============================================
-   GUIDES SECTION (article links)
-   ============================================ */
-
-.guides {
-  margin-top: var(--space-12);
-}
-.guides h2 {
-  font-size: var(--text-xl);
-  margin-bottom: var(--space-4);
-  text-align: center;
-}
+/* Guides */
+.guides { margin-top: var(--space-12); }
+.guides h2 { font-size: var(--text-xl); margin-bottom: var(--space-4); text-align: center; }
 .guide-list {
   display: flex;
   flex-direction: column;
@@ -158,7 +111,9 @@
   font-size: var(--text-sm);
   transition: var(--speed);
 }
-.guide-list a:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+.guide-list a:hover { border-color: var(--primary); color: var(--primary); }
+
+@media (max-width: 640px) {
+  .hero h1 { font-size: var(--text-2xl); }
+  .test-grid { grid-template-columns: 1fr; }
 }

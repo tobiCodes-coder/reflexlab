@@ -3,33 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ReflexLab — Free Brain & Reflex Tests Online</title>
-  <meta name="description" content="Test your reaction time, memory and speed. Beat your personal best and challenge friends. Free, no signup, runs in your browser." />
+  <title>ReflexLab — Free Brain & Reflex Tests</title>
+  <meta name="description" content="Test your reaction time, click speed, typing speed, aim and memory. Free brain tests that run in your browser — no signup, no downloads." />
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
+  <main class="container">
+    <section class="hero">
+      <h1>Train your <span>brain</span>. Beat your best.</h1>
+      <p>Free reflex and cognitive tests — reaction time, CPS, typing, aim and memory. No signup, instant results, right in your browser.</p>
+      <div class="facts">
+        <div class="fact"><div class="num">9</div><div class="lbl">free tests</div></div>
+        <div class="fact"><div class="num">0</div><div class="lbl">signup needed</div></div>
+        <div class="fact"><div class="num">100%</div><div class="lbl">in-browser</div></div>
+      </div>
+    </section>
 
-  <section class="guides">
+    <div id="testGrid" class="test-grid"></div>
+
+    <section class="guides">
       <h2>Guides & Facts</h2>
       <div class="guide-list">
-        <a href="content/average-reaction-time.html">→ What is the average human reaction time?</a>
-        <a href="content/good-cps-score.html">→ What is a good CPS score?</a>
-        <a href="content/improve-typing-speed.html">→ What is a good typing speed?</a>
-    </div>
-  </section>
-
-  <main class="container">
-    <header class="hero">
-      <h1>How sharp is <span>your brain</span>?</h1>
-      <p>Test your reaction, memory and speed. Beat your best score and challenge your friends — free, no signup.</p>
-    </header>
-    <div id="testGrid" class="test-grid"></div>
+        <a href="content/average-reaction-time.html">What is the average human reaction time?</a>
+        <a href="content/good-cps-score.html">What is a good CPS score?</a>
+        <a href="content/improve-typing-speed.html">What is a good typing speed?</a>
+      </div>
+    </section>
   </main>
-  <footer>ReflexLab — all tests run 100% in your browser. No data collected.</footer>
 
-  <!-- Order important: age data, tarpor utils, tarpor home -->
   <script src="js/tests-data.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/home.js"></script>

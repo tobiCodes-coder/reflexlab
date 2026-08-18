@@ -1,85 +1,123 @@
 /* ============================================
-   REFLEXLAB - TEST PAGE STYLES
-   Sob test page: game box, score, result
+   REFLEXLAB - TEST PAGES (HB-style layout)
    ============================================ */
 
-/* --- Page width (test page narrow) --- */
-.game-wrap {
-  max-width: 640px;
-  margin: 0 auto;
-}
+.game-wrap { max-width: 860px; margin: 0 auto; }
 
-/* --- Test header --- */
-.test-head {
-  text-align: center;
-  margin-bottom: var(--space-6);
-}
-.test-head h1 { font-size: var(--text-2xl); margin-bottom: var(--space-2); }
-.test-head p { color: var(--text-2); font-size: var(--text-sm); }
+.crumb { font-size: var(--text-sm); color: var(--text-2); margin-bottom: var(--space-4); }
+.crumb a { color: var(--primary); text-decoration: none; }
 
-/* --- Game box: jekhane game hobe --- */
-.game-box {
-  min-height: 320px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
+/* ---------- Result card ---------- */
+.result-card {
   background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.result-card .title { color: var(--text-2); font-size: var(--text-sm); }
+.result-card .big {
+  font-family: var(--font-mono);
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: var(--space-2) 0;
+}
+.result-card .big.pop { animation: pop 0.4s ease; }
+.result-card .unit { color: var(--text-2); font-size: var(--text-lg); margin-bottom: var(--space-2); }
+.result-card .pct { font-weight: 700; font-size: var(--text-sm); color: var(--primary); margin-bottom: var(--space-3); }
+.best-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-2);
+  background: var(--card-hover);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-5);
+}
+.card-actions { display: flex; gap: var(--space-3); justify-content: center; }
+
+/* ---------- Game box ---------- */
+.game-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: var(--space-6);
+  min-height: 240px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-lg);
+  font-weight: 700;
   cursor: pointer;
   user-select: none;
-  font-size: var(--text-lg);
-  color: var(--text-2);
-  transition: background 0.15s;
+  text-align: center;
+  padding: var(--space-4);
+  transition: background 0.15s, border-color 0.15s;
 }
-
-/* --- Wait state (red) --- */
-.game-box.wait {
-  background: #7f1d1d;
-  border-color: #b91c1c;
-  color: #fecaca;
-}
-
-/* --- Go state (green) --- */
+.game-box.wait { background: #7f1d1d; border-color: #ef4444; color: #fecaca; }
 .game-box.go {
   background: #14532d;
-  border-color: #16a34a;
-  color: #bbf7d0;
+  border-color: #22c55e;
+  color: #dcfce7;
+  animation: pulse 0.5s ease infinite alternate;
 }
-
-/* --- Big score number --- */
-.score-big {
-  font-family: var(--font-mono);
-  font-size: 48px;
-  font-weight: 800;
-  color: var(--primary);
-  text-align: center;
-  margin-top: var(--space-6);
+@keyframes pulse {
+  from { box-shadow: 0 0 0 rgba(34, 197, 94, 0); }
+  to { box-shadow: 0 0 24px rgba(34, 197, 94, 0.5); }
 }
 .score-label {
   text-align: center;
   color: var(--text-2);
   font-size: var(--text-sm);
+  margin: var(--space-3) 0;
 }
 
-/* --- Result button row --- */
-.result-row {
+/* ---------- Statistics card ---------- */
+.stats-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-top: var(--space-5);
+}
+.stats-card h2 { font-size: var(--text-xl); margin-bottom: var(--space-4); }
+.chart-legend {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-5);
   justify-content: center;
-  align-items: center;
-  margin-top: var(--space-4);
-  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--text-2);
+}
+.chart-legend span { display: flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.dot.you { background: var(--primary); }
+.dot.avg { background: var(--text-2); }
+#chart { width: 100%; height: auto; display: block; }
+
+.hist-title { font-size: var(--text-xs); color: var(--text-2); margin-top: var(--space-5); margin-bottom: var(--space-3); }
+.hist-row { display: flex; gap: var(--space-2); align-items: flex-end; height: 90px; }
+.hist-bar {
+  flex: 1;
+  background: var(--primary);
+  border-radius: 4px 4px 0 0;
+  min-height: 8px;
+  position: relative;
+}
+.hist-bar span {
+  position: absolute;
+  top: -18px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-2);
+  font-family: var(--font-mono);
 }
 
-
-/* ============================================
-   TYPING TEST STYLES
-   ============================================ */
-
-/* --- Target text box --- */
+/* ---------- Typing ---------- */
 .type-target {
   background: var(--card);
   border: 1px solid var(--border);
@@ -95,8 +133,6 @@
 .type-target span.ok { color: var(--success); }
 .type-target span.bad { color: var(--danger); text-decoration: underline; }
 .type-target span.current { background: var(--primary-soft); border-radius: 2px; }
-
-/* --- Typing input --- */
 .type-input {
   width: 100%;
   padding: 14px 16px;
@@ -109,22 +145,10 @@
   outline: none;
 }
 .type-input:focus { border-color: var(--primary); }
-.type-input:disabled { opacity: 0.5;}
+.type-input:disabled { opacity: 0.5; }
 
-
-/* ============================================
-   AIM TRAINER STYLES
-   ============================================ */
-
-/* Arena: target position absolute hobe */
-.game-box.arena {
-  position: relative;
-  cursor: crosshair;
-  min-height: 360px;
-  padding: 0;
-}
-
-/* Target circle */
+/* ---------- Aim ---------- */
+.game-box.arena { position: relative; cursor: crosshair; min-height: 340px; padding: 0; }
 .target {
   position: absolute;
   width: 48px;
@@ -137,12 +161,7 @@
 }
 .target:active { transform: scale(0.9); }
 
-
-/* ============================================
-   SEQUENCE MEMORY STYLES
-   ============================================ */
-
-/* Number display boro kore */
+/* ---------- Memory tests ---------- */
 .game-box.seq {
   font-family: var(--font-mono);
   font-size: 36px;
@@ -150,47 +169,12 @@
   color: var(--primary);
   font-weight: 800;
 }
+.input-row { display: flex; gap: 8px; justify-content: center; margin-top: var(--space-4); }
+.input-row input { width: 220px; text-align: center; letter-spacing: 4px; font-size: var(--text-lg); }
 
-/* Input row */
-.input-row {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: var(--space-4);
-}
-.input-row input {
-  width: 220px;
-  text-align: center;
-  letter-spacing: 4px;
-  font-size: var(--text-lg);
-}
-
-
-/* ============================================
-   VISUAL MEMORY STYLES
-   ============================================ */
-
-/* Grid mode box */
-.game-box.grid-mode {
-  display: block;
-  padding: var(--space-4);
-  cursor: default;
-}
-.game-box.grid-mode #boxMsg {
-  display: block;
-  text-align: center;
-  padding: var(--space-4) 0;
-}
-
-/* Pattern grid */
-.mem-grid {
-  display: grid;
-  gap: 6px;
-  width: 100%;
-  margin-top: var(--space-2);
-}
-
-/* Ekta cell */
+.game-box.grid-mode { display: block; padding: var(--space-4); cursor: default; }
+.game-box.grid-mode #boxMsg { display: block; text-align: center; padding: var(--space-4) 0; }
+.mem-grid { display: grid; gap: 6px; width: 100%; margin-top: var(--space-2); }
 .mem-cell {
   aspect-ratio: 1;
   border-radius: 6px;
@@ -199,16 +183,10 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.mem-cell.on { background: var(--primary); border-color: var(--primary); }   /* pattern dekhano */
-.mem-cell.hit { background: var(--success); border-color: var(--success); } /* sohoj click */
-.mem-cell.miss { background: var(--danger); border-color: var(--danger); }  /* vul click */
+.mem-cell.on { background: var(--primary); border-color: var(--primary); }
+.mem-cell.hit { background: var(--success); border-color: var(--success); }
+.mem-cell.miss { background: var(--danger); border-color: var(--danger); }
 
-
-/* ============================================
-   VERBAL MEMORY STYLES
-   ============================================ */
-
-/* Word display (letter-spacing kom) */
 .game-box.word {
   font-family: var(--font-mono);
   font-size: 36px;
@@ -217,8 +195,21 @@
   font-weight: 800;
 }
 
-/* Disabled button */
-.btn:disabled {
-  opacity: 0.4;
-  cursor: default;
+/* ---------- Buttons row / animations ---------- */
+.result-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin: var(--space-5) 0;
+}
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
 }

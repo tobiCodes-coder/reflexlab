@@ -1,168 +1,159 @@
-/* ============================================
-   REFLEXLAB - VISUAL MEMORY
-   Flow: idle -> showing -> input -> (next / done)
-   ============================================ */
-
-var gameBox = byId('gameBox');
-var boxMsg = byId('boxMsg');
-var memGrid = byId('memGrid');
-var scoreWrap = byId('scoreWrap');
-var scoreBig = byId('scoreBig');
-var btnRetry = byId('btnRetry');
+var grid = byId('grid');
+var roundInfo = byId('roundInfo');
+var bigScore = byId('bigScore');
+var pctText = byId('pctText');
+var bestChip = byId('bestChip');
+var btnPlay = byId('btnPlay');
 var btnShare = byId('btnShare');
-var bestBadge = byId('bestBadge');
 var msg = byId('msg');
 
-var state = 'idle';   // idle | showing | input | between | done
+var AVG = 9, AVG_SD = 3;
+var ELITE = 16, ELITE_SD = 4;
+
+var state = 'idle';
 var level = 1;
-var pattern = [];     // je cell gulo jolbe
-var hitsCount = 0;
+var pattern = [];
+var userClicks = [];
 var lastScore = null;
 
-/* Level onujayi grid size + koyta cell jolbe */
-function gridSize(lvl) {
-  var cols = Math.min(3 + Math.floor((lvl - 1) / 2), 6); // 3,3,4,4,5,5,6...
-  var filled = Math.min(lvl + 2, cols * cols - 1);       // 3,4,5,6...
-  return { cols: cols, filled: filled };
-}
+var cells = [];
+(function buildGrid() {
+  for (var i = 0; i < 9; i++) {
+    var c = document.createElement('div');
+    c.className = 'mem-cell';
+    c.setAttribute('data-i', i);
+    grid.appendChild(c);
+    cells.push(c);
+  }
+})();
 
-/* Best badge */
-function showBest() {
+function percentile(val, mean, sd) {
+  var z = (val - mean) / sd;
+  var t = 1 / (1 + 0.2316419 * Math.abs(z));
+  var d = 0.3989423 * Math.exp(-z * z / 2);
+  var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  var cdf = z > 0 ? 1 - p : p;
+  return Math.round(cdf * 100);
+}
+var MIN = 0, MAX = 22, W = 600, H = 200;
+function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
+function curvePath(mean, sd) {
+  var pts = 'M0,' + H;
+  for (var i = 0; i <= 60; i++) {
+    var x = MIN + (MAX - MIN) * i / 60;
+    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
+    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
+  }
+  return pts + ' L' + W + ',' + H + ' Z';
+}
+function drawCurves() {
+  byId('avgCurve').setAttribute('d', curvePath(AVG, AVG_SD));
+  byId('proCurve').setAttribute('d', curvePath(ELITE, ELITE_SD));
+}
+function markYou(v) {
+  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
+  var line = byId('youLine');
+  var lab = byId('youLabel');
+  line.setAttribute('x1', x); line.setAttribute('x2', x);
+  line.style.display = 'block';
+  lab.setAttribute('x', Math.min(x + 6, W - 80));
+  lab.setAttribute('y', 24);
+  lab.textContent = 'You: ' + v;
+  lab.style.display = 'block';
+}
+function drawProg() {
+  var hist = getHistory('visual-memory');
+  var svg = byId('progChart');
+  if (hist.length < 2) { svg.innerHTML = '<text x="300" y="70" fill="#94a3b8" font-size="12" text-anchor="middle">Play at least 2 sessions to see your progress line</text>'; return; }
+  var min = Math.min.apply(null, hist);
+  var max = Math.max.apply(null, hist);
+  if (min === max) max = min + 1;
+  var pts = [], dots = '';
+  for (var i = 0; i < hist.length; i++) {
+    var x = 50 + i * (500 / (hist.length - 1));
+    var y = 25 + (1 - (hist[i] - min) / (max - min)) * 90;
+    pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+    dots += '<circle cx="' + x + '" cy="' + y + '" r="4" fill="#22d3ee"/>';
+    dots += '<text x="' + x + '" y="' + (y - 10) + '" fill="#94a3b8" font-size="11" text-anchor="middle">' + hist[i] + '</text>';
+  }
+  svg.innerHTML = '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
+}
+function showBestChip() {
   var best = getBest('visual-memory');
-  bestBadge.textContent = best !== null ? 'Best: level ' + best : 'No record yet';
+  bestChip.textContent = best !== null ? 'Best: ' + best + ' levels' : 'No record yet';
 }
 
-/* Reset */
-function resetGame() {
-  state = 'idle';
+function startSession() {
   level = 1;
-  memGrid.style.display = 'none';
-  boxMsg.style.display = 'block';
-  boxMsg.textContent = 'Click to start';
-  scoreWrap.style.display = 'none';
-  msg.textContent = '';
+  nextLevel();
 }
 
-/* Game shuru */
-function startGame() {
-  level = 1;
-  nextRound();
-}
-
-/* Notun round: pattern banano + dekhano */
-function nextRound() {
-  state = 'showing';
-  hitsCount = 0;
-  var cfg = gridSize(level);
-  var total = cfg.cols * cfg.cols;
-
-  // Random pattern pick (no duplicate)
+function nextLevel() {
+  var count = level + 2;
   pattern = [];
-  while (pattern.length < cfg.filled) {
-    var r = Math.floor(Math.random() * total);
-    if (pattern.indexOf(r) === -1) pattern.push(r);
+  userClicks = [];
+  cells.forEach(function (c) { c.classList.remove('on', 'hit', 'miss'); });
+  var indices = [];
+  while (pattern.length < count) {
+    var r = Math.floor(Math.random() * 9);
+    if (indices.indexOf(r) === -1) { indices.push(r); pattern.push(r); }
   }
-
-  // Grid build
-  memGrid.style.display = 'grid';
-  memGrid.style.gridTemplateColumns = 'repeat(' + cfg.cols + ', 1fr)';
-  memGrid.innerHTML = '';
-  for (var i = 0; i < total; i++) {
-    var cell = document.createElement('div');
-    cell.className = 'mem-cell' + (pattern.indexOf(i) !== -1 ? ' on' : '');
-    cell.setAttribute('data-i', i);
-    memGrid.appendChild(cell);
-  }
-
-  boxMsg.style.display = 'block';
-  boxMsg.textContent = 'Memorize the pattern! (Level ' + level + ')';
-
-  // Kichhon por pattern lukao
+  state = 'showing';
+  pattern.forEach(function (i) { cells[i].classList.add('on'); });
+  roundInfo.textContent = 'Level ' + level + ' — memorize the pattern';
   setTimeout(function () {
-    if (state !== 'showing') return; // safety
+    pattern.forEach(function (i) { cells[i].classList.remove('on'); });
     state = 'input';
-    var cells = memGrid.children;
-    for (var i = 0; i < cells.length; i++) cells[i].className = 'mem-cell';
-    boxMsg.textContent = 'Click the cells that were lit!';
-  }, 1000 + cfg.filled * 200);
+    roundInfo.textContent = 'Your turn — click the lit tiles';
+  }, 1500 + level * 200);
 }
 
-/* Cell click handler (event delegation) */
-memGrid.addEventListener('click', function (e) {
-  if (state !== 'input') return;
-  var cell = e.target.closest('.mem-cell');
-  if (!cell || cell.className.indexOf('hit') !== -1) return;
-
-  var i = Number(cell.getAttribute('data-i'));
-
-  if (pattern.indexOf(i) !== -1) {
-    // Sohoj cell
-    cell.className = 'mem-cell hit';
-    hitsCount++;
-    if (hitsCount === pattern.length) {
-      state = 'between';
-      level++;
-      msg.textContent = 'Correct! Level ' + level;
-      setTimeout(nextRound, 700);
-    }
-  } else {
-    // Vul cell = game over
-    cell.className = 'mem-cell miss';
-    endGame();
-  }
-});
-
-/* Sesh */
-function endGame() {
+function endSession() {
   state = 'done';
   var score = level - 1;
   lastScore = score;
+  roundInfo.textContent = '';
+  bigScore.textContent = score;
+  bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
+  pctText.textContent = 'Better than ' + percentile(score, AVG, AVG_SD) + '% of users';
+  markYou(score);
+  pushHistory('visual-memory', score);
+  drawProg();
+  saveBest('visual-memory', score, false);
+  showBestChip();
+  msg.textContent = ratingFor(score);
+}
 
-  // Asol pattern dekhie dei (learning er jonno)
-  var cells = memGrid.children;
-  for (var i = 0; i < cells.length; i++) {
-    if (pattern.indexOf(i) !== -1 && cells[i].className.indexOf('hit') === -1) {
-      cells[i].className = 'mem-cell on';
-    }
+function ratingFor(v) {
+  if (v >= 16) return 'Elite visual memory!';
+  if (v >= 11) return 'Above average!';
+  if (v >= 7) return 'Average visual memory.';
+  return 'Keep training!';
+}
+
+grid.addEventListener('click', function (e) {
+  if (state !== 'input') return;
+  var cell = e.target.closest('.mem-cell');
+  if (!cell || cell.classList.contains('hit') || cell.classList.contains('miss')) return;
+  var i = Number(cell.getAttribute('data-i'));
+  if (pattern.indexOf(i) !== -1) {
+    cell.classList.add('hit');
+    userClicks.push(i);
+    if (userClicks.length === pattern.length) { level++; setTimeout(nextLevel, 500); }
+  } else {
+    cell.classList.add('miss');
+    pattern.forEach(function (pi) { cells[pi].classList.add('hit'); });
+    endSession();
   }
-
-  boxMsg.textContent = 'Done! Click to play again.';
-  scoreWrap.style.display = 'block';
-  scoreBig.textContent = score;
-
-  var isNewBest = saveBest('visual-memory', score, false); // beshi = bhalo
-  msg.textContent = isNewBest ? 'New personal best!' : ratingFor(score);
-  showBest();
-}
-
-/* Rating */
-function ratingFor(lvl) {
-  if (lvl < 4) return 'Warm up those eyes!';
-  if (lvl < 7) return 'Average visual memory.';
-  if (lvl < 10) return 'Sharp eyes!';
-  return 'Eagle vision!';
-}
-
-/* Box click: start / restart */
-gameBox.addEventListener('click', function () {
-  if (state === 'idle' || state === 'done') startGame();
 });
 
-/* Try again */
-btnRetry.addEventListener('click', resetGame);
-
-/* Share */
+btnPlay.addEventListener('click', startSession);
 btnShare.addEventListener('click', function () {
-  if (lastScore === null) {
-    msg.textContent = 'Play one round first!';
-    return;
-  }
-  var text = 'I cleared level ' + lastScore + ' on ReflexLab Visual Memory. Beat me!';
-  copyText(text).then(function () {
-    msg.textContent = 'Score copied — share it anywhere!';
-  });
+  if (lastScore === null) { msg.textContent = 'Play one session first!'; return; }
+  copyText('I reached level ' + lastScore + ' on ReflexLab Visual Memory. Beat me!')
+    .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-/* Page load */
-showBest();
-resetGame();
+drawCurves(); drawProg(); showBestChip();
+var savedBest = getBest('visual-memory');
+if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, AVG, AVG_SD) + '%'; markYou(savedBest); }
