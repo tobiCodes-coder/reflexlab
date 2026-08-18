@@ -127,3 +127,38 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   GUIDES SECTION (article links)
+   ============================================ */
+
+.guides {
+  margin-top: var(--space-12);
+}
+.guides h2 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+.guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 640px;
+  margin: 0 auto;
+}
+.guide-list a {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  transition: var(--speed);
+}
+.guide-list a:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}

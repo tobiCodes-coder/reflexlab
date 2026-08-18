@@ -1,3 +1,5 @@
+cd ~/Desktop/reflexlab
+cat > sitemap.xml << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://reflexlab.tobiascent.workers.dev/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
@@ -10,4 +12,8 @@
   <url><loc>https://reflexlab.tobiascent.workers.dev/tests/number-memory/number-memory.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://reflexlab.tobiascent.workers.dev/tests/color-vision/color-vision.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://reflexlab.tobiascent.workers.dev/tests/verbal-memory/verbal-memory.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/average-reaction-time.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/good-cps-score.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/improve-typing-speed.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>
+EOF
