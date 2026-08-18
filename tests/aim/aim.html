@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aim Trainer — ReflexLab</title>
+  <meta name="description" content="Train your mouse aim. Hit targets as fast as you can and track your average time per target. Free, no signup." />
+  <link rel="stylesheet" href="../../css/variables.css" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/test.css" />
+</head>
+<body>
+  <main class="container">
+    <div class="game-wrap">
+      <a class="back-link" href="../../index.html">← Back to all tests</a>
+
+      <header class="test-head">
+        <h1>Aim Trainer</h1>
+        <p>Hit the targets as fast as you can. Train your mouse aim.</p>
+      </header>
+
+      <!-- Target count select -->
+      <div class="result-row">
+        <button class="btn btn-ghost cnt-btn" data-cnt="10">10 targets</button>
+        <button class="btn btn-primary cnt-btn" data-cnt="20">20 targets</button>
+        <button class="btn btn-ghost cnt-btn" data-cnt="30">30 targets</button>
+      </div>
+
+      <!-- Arena -->
+      <div id="gameBox" class="game-box arena"><span id="boxMsg">Click to start</span></div>
+
+      <!-- Live stats -->
+      <div id="liveWrap" style="display:none;">
+        <div class="score-label">Target: <span id="liveHits">0</span>/<span id="liveTotal">20</span> | Misses: <span id="liveMiss">0</span></div>
+      </div>
+
+      <!-- Final score -->
+      <div id="scoreWrap" style="display:none;">
+        <div class="score-label">Average time per target</div>
+        <div id="scoreBig" class="score-big">0 ms</div>
+        <div class="score-label">Accuracy: <span id="accText">0%</span></div>
+      </div>
+
+      <div class="result-row">
+        <button id="btnRetry" class="btn btn-primary">Try again</button>
+        <button id="btnShare" class="btn btn-ghost">Share score</button>
+        <span id="bestBadge" class="badge"></span>
+      </div>
+
+      <p id="msg" class="msg"></p>
+    </div>
+  </main>
+
+  <script src="../../js/utils.js"></script>
+  <script src="aim.js"></script>
+</body>
+</html>

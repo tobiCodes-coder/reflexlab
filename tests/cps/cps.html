@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Click Speed Test (CPS) — ReflexLab</title>
+  <meta name="description" content="Measure your clicks per second. 1, 5 or 10 second test. Free, no signup, runs in your browser." />
+  <link rel="stylesheet" href="../../css/variables.css" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/test.css" />
+</head>
+<body>
+  <main class="container">
+    <div class="game-wrap">
+      <a class="back-link" href="../../index.html">← Back to all tests</a>
+
+      <header class="test-head">
+        <h1>Click Speed (CPS)</h1>
+        <p>Click the box as fast as you can. How many clicks per second?</p>
+      </header>
+
+      <!-- Time select: 1 / 5 / 10 second -->
+      <div class="result-row">
+        <button class="btn btn-ghost dur-btn" data-sec="1">1 sec</button>
+        <button class="btn btn-primary dur-btn" data-sec="5">5 sec</button>
+        <button class="btn btn-ghost dur-btn" data-sec="10">10 sec</button>
+      </div>
+
+      <!-- Game area -->
+      <div id="gameBox" class="game-box">Click to start</div>
+
+      <!-- Live counter (running obdhi) -->
+      <div id="liveWrap" style="display:none;">
+        <div class="score-label">Clicks: <span id="liveClicks">0</span> | Time left: <span id="liveTime">0.0</span>s</div>
+      </div>
+
+      <!-- Final score -->
+      <div id="scoreWrap" style="display:none;">
+        <div class="score-label">Your click speed</div>
+        <div id="scoreBig" class="score-big">0 CPS</div>
+      </div>
+
+      <div class="result-row">
+        <button id="btnRetry" class="btn btn-primary">Try again</button>
+        <button id="btnShare" class="btn btn-ghost">Share score</button>
+        <span id="bestBadge" class="badge"></span>
+      </div>
+
+      <p id="msg" class="msg"></p>
+    </div>
+  </main>
+
+  <script src="../../js/utils.js"></script>
+  <script src="cps.js"></script>
+</body>
+</html>

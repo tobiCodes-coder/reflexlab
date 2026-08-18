@@ -1,0 +1,110 @@
+/* ============================================
+   REFLEXLAB - GLOBAL STYLES
+   Sob page e ja lage: reset, layout, buttons, footer
+   ============================================ */
+
+/* --- Reset: browser default style bondho --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Base body --- */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Container: content majh e rakhbe --- */
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-6);
+  flex: 1;
+}
+
+/* --- Buttons --- */
+.btn {
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--speed);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #06202a;
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* --- Badge (personal best etc.) --- */
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+.badge.new-best {
+  background: rgba(74, 222, 128, 0.12);
+  color: var(--success);
+  border-color: var(--success);
+}
+
+/* --- Links --- */
+a { color: var(--primary); }
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-6);
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: var(--text-sm);
+}
+.back-link:hover { color: var(--primary); }
+
+/* --- Footer --- */
+footer {
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  border-top: 1px solid var(--border);
+}
+
+/* --- Status message line --- */
+.msg {
+  text-align: center;
+  margin-top: var(--space-3);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  min-height: 20px;
+}
+
+/* --- Mobile --- */
+@media (max-width: 640px) {
+  .container { padding: var(--space-8) var(--space-4); }
+}

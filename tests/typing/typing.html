@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Typing Speed Test (WPM) — ReflexLab</title>
+  <meta name="description" content="Measure your typing speed in WPM with live accuracy tracking. Free, no signup, runs in your browser." />
+  <link rel="stylesheet" href="../../css/variables.css" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/test.css" />
+</head>
+<body>
+  <main class="container">
+    <div class="game-wrap">
+      <a class="back-link" href="../../index.html">← Back to all tests</a>
+
+      <header class="test-head">
+        <h1>Typing Speed</h1>
+        <p>Type the text below as fast and accurately as you can.</p>
+      </header>
+
+      <!-- Time select -->
+      <div class="result-row">
+        <button class="btn btn-ghost dur-btn" data-sec="15">15 sec</button>
+        <button class="btn btn-primary dur-btn" data-sec="30">30 sec</button>
+        <button class="btn btn-ghost dur-btn" data-sec="60">60 sec</button>
+      </div>
+
+      <!-- Target text (character highlight hobe) -->
+      <div id="targetText" class="type-target"></div>
+
+      <!-- Typing input -->
+      <input id="typeInput" class="type-input" type="text"
+        placeholder="Click here and start typing..."
+        autocomplete="off" autocapitalize="off" spellcheck="false" />
+
+      <!-- Live stats -->
+      <div id="liveWrap" style="display:none;">
+        <div class="score-label">Time left: <span id="liveTime">0</span>s | WPM: <span id="liveWpm">0</span></div>
+      </div>
+
+      <!-- Final score -->
+      <div id="scoreWrap" style="display:none;">
+        <div class="score-label">Your typing speed</div>
+        <div id="scoreBig" class="score-big">0 WPM</div>
+        <div class="score-label">Accuracy: <span id="accText">0%</span></div>
+      </div>
+
+      <div class="result-row">
+        <button id="btnRetry" class="btn btn-primary">New text</button>
+        <button id="btnShare" class="btn btn-ghost">Share score</button>
+        <span id="bestBadge" class="badge"></span>
+      </div>
+
+      <p id="msg" class="msg"></p>
+    </div>
+  </main>
+
+  <script src="../../js/utils.js"></script>
+  <script src="typing.js"></script>
+</body>
+</html>

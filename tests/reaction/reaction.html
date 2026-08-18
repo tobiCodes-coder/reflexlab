@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reaction Time Test — ReflexLab</title>
+  <meta name="description" content="Test your reaction time in milliseconds. Free, no signup, runs in your browser." />
+  <link rel="stylesheet" href="../../css/variables.css" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/test.css" />
+</head>
+<body>
+  <main class="container">
+    <div class="game-wrap">
+      <a class="back-link" href="../../index.html">← Back to all tests</a>
+
+      <header class="test-head">
+        <h1>Reaction Time</h1>
+        <p>Click the box the moment it turns green. How fast are you?</p>
+      </header>
+
+      <!-- Game area: click korar jayga -->
+      <div id="gameBox" class="game-box">Click to start</div>
+
+      <!-- Score: result er por dekhabe -->
+      <div id="scoreWrap" style="display:none;">
+        <div class="score-label">Your reaction time</div>
+        <div id="scoreBig" class="score-big">0 ms</div>
+      </div>
+
+      <!-- Buttons + best badge -->
+      <div class="result-row">
+        <button id="btnRetry" class="btn btn-primary">Try again</button>
+        <button id="btnShare" class="btn btn-ghost">Share score</button>
+        <span id="bestBadge" class="badge"></span>
+      </div>
+
+      <p id="msg" class="msg"></p>
+    </div>
+  </main>
+
+  <!-- Order: age utils, tarpor ei test er logic -->
+  <script src="../../js/utils.js"></script>
+  <script src="reaction.js"></script>
+</body>
+</html>

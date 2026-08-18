@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Vision Test — ReflexLab</title>
+  <meta name="description" content="Can you spot the odd color? The difference gets smaller every level. Free, no signup." />
+  <link rel="stylesheet" href="../../css/variables.css" />
+  <link rel="stylesheet" href="../../css/global.css" />
+  <link rel="stylesheet" href="../../css/test.css" />
+</head>
+<body>
+  <main class="container">
+    <div class="game-wrap">
+      <a class="back-link" href="../../index.html">← Back to all tests</a>
+
+      <header class="test-head">
+        <h1>Color Vision</h1>
+        <p>One tile is a slightly different color. Find it — it gets harder every level.</p>
+      </header>
+
+      <!-- Arena: reuse grid-mode -->
+      <div id="gameBox" class="game-box grid-mode">
+        <span id="boxMsg">Click to start</span>
+        <div id="memGrid" class="mem-grid" style="display:none;"></div>
+      </div>
+
+      <!-- Final score -->
+      <div id="scoreWrap" style="display:none;">
+        <div class="score-label">Levels cleared</div>
+        <div id="scoreBig" class="score-big">0</div>
+      </div>
+
+      <div class="result-row">
+        <button id="btnRetry" class="btn btn-primary">Try again</button>
+        <button id="btnShare" class="btn btn-ghost">Share score</button>
+        <span id="bestBadge" class="badge"></span>
+      </div>
+
+      <p id="msg" class="msg"></p>
+    </div>
+  </main>
+
+  <script src="../../js/utils.js"></script>
+  <script src="color-vision.js"></script>
+</body>
+</html>
