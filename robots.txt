@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://reflexlab.tobiascent.workers.dev/sitemap.xml
