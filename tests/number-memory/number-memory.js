@@ -8,13 +8,12 @@ var btnPlay = byId('btnPlay');
 var btnShare = byId('btnShare');
 var msg = byId('msg');
 
-var AVG = 7, AVG_SD = 2;
-var ELITE = 13, ELITE_SD = 3;
-
 var state = 'idle';
 var level = 1;
 var currentNum = '';
 var lastScore = null;
+var showTimer = null;
+var nextTimer = null;
 
 function makeNumber(digits) {
   var s = String(1 + Math.floor(Math.random() * 9));
@@ -30,32 +29,15 @@ function percentile(val, mean, sd) {
   var cdf = z > 0 ? 1 - p : p;
   return Math.round(cdf * 100);
 }
-var MIN = 0, MAX = 18, W = 600, H = 200;
-function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average humans', value: 7, cls: 'avg' },
+    { label: 'Elite memory', value: 13, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'digits');
 }
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(AVG, AVG_SD));
-  byId('proCurve').setAttribute('d', curvePath(ELITE, ELITE_SD));
-}
-function markYou(v) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x); line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + v;
-  lab.style.display = 'block';
-}
+
 function drawProg() {
   var hist = getHistory('number-memory');
   var svg = byId('progChart');
@@ -73,24 +55,33 @@ function drawProg() {
   }
   svg.innerHTML = '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
 }
+
 function showBestChip() {
   var best = getBest('number-memory');
   bestChip.textContent = best !== null ? 'Best: ' + best + ' digits' : 'No record yet';
 }
 
+function clearTimers() {
+  if (showTimer) { clearTimeout(showTimer); showTimer = null; }
+  if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; }
+}
+
 function startSession() {
+  clearTimers();
   level = 1;
   nextLevel();
 }
 
 function nextLevel() {
+  clearTimers();
   currentNum = makeNumber(level);
   state = 'showing';
   numInput.disabled = true;
   numInput.value = '';
   gameBox.textContent = currentNum;
   roundInfo.textContent = 'Level ' + level + ' — memorize the number (' + level + ' digits)';
-  setTimeout(function () {
+  showTimer = setTimeout(function () {
+    showTimer = null;
     gameBox.textContent = 'Type the number!';
     numInput.disabled = false;
     numInput.focus();
@@ -107,8 +98,8 @@ function endSession() {
   roundInfo.textContent = '';
   bigScore.textContent = score;
   bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
-  pctText.textContent = 'Better than ' + percentile(score, AVG, AVG_SD) + '% of users';
-  markYou(score);
+  pctText.textContent = 'Better than ' + percentile(score, 7, 2) + '% of users';
+  updateCompare(score);
   pushHistory('number-memory', score);
   drawProg();
   saveBest('number-memory', score, false);
@@ -127,8 +118,12 @@ numInput.addEventListener('input', function () {
   if (state !== 'input') return;
   numInput.value = numInput.value.replace(/\D/g, '');
   if (numInput.value.length === currentNum.length) {
-    if (numInput.value === currentNum) { level++; setTimeout(nextLevel, 500); }
-    else endSession();
+    if (numInput.value === currentNum) {
+      level++;
+      nextTimer = setTimeout(nextLevel, 500);
+    } else {
+      endSession();
+    }
   }
 });
 
@@ -139,6 +134,7 @@ btnShare.addEventListener('click', function () {
     .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-drawCurves(); drawProg(); showBestChip();
 var savedBest = getBest('number-memory');
-if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, AVG, AVG_SD) + '%'; markYou(savedBest); }
+updateCompare(savedBest);
+drawProg(); showBestChip();
+if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, 7, 2) + '%'; }

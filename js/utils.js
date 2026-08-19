@@ -129,3 +129,25 @@ function initLayout() {
 }
 
 initLayout();
+
+
+/* ---------- COMPARISON BAR CHART ---------- */
+function renderCompare(items, unit) {
+  var max = 0;
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].value !== null && items[i].value > max) max = items[i].value;
+  }
+  if (max === 0) max = 1;
+  var html = '';
+  for (var j = 0; j < items.length; j++) {
+    var it = items[j];
+    var w = (it.value === null) ? 0 : Math.max(4, Math.round(it.value / max * 100));
+    var valText = (it.value === null) ? '—' : it.value + ' ' + unit;
+    html += '<div class="cmp-row">' +
+      '<div class="cmp-label">' + it.label + '</div>' +
+      '<div class="cmp-bar"><div class="cmp-fill ' + it.cls + '" style="width:' + w + '%"></div></div>' +
+      '<div class="cmp-val">' + valText + '</div>' +
+      '</div>';
+  }
+  return html;
+}

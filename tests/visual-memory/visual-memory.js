@@ -7,18 +7,19 @@ var btnPlay = byId('btnPlay');
 var btnShare = byId('btnShare');
 var msg = byId('msg');
 
-var AVG = 9, AVG_SD = 3;
-var ELITE = 16, ELITE_SD = 4;
+var CELLS = 12;
 
 var state = 'idle';
 var level = 1;
 var pattern = [];
 var userClicks = [];
 var lastScore = null;
+var showTimer = null;
+var nextTimer = null;
 
 var cells = [];
 (function buildGrid() {
-  for (var i = 0; i < 9; i++) {
+  for (var i = 0; i < CELLS; i++) {
     var c = document.createElement('div');
     c.className = 'mem-cell';
     c.setAttribute('data-i', i);
@@ -35,32 +36,15 @@ function percentile(val, mean, sd) {
   var cdf = z > 0 ? 1 - p : p;
   return Math.round(cdf * 100);
 }
-var MIN = 0, MAX = 22, W = 600, H = 200;
-function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average users', value: 9, cls: 'avg' },
+    { label: 'Elite memory', value: 16, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'lvl');
 }
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(AVG, AVG_SD));
-  byId('proCurve').setAttribute('d', curvePath(ELITE, ELITE_SD));
-}
-function markYou(v) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x); line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + v;
-  lab.style.display = 'block';
-}
+
 function drawProg() {
   var hist = getHistory('visual-memory');
   var svg = byId('progChart');
@@ -78,34 +62,47 @@ function drawProg() {
   }
   svg.innerHTML = '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
 }
+
 function showBestChip() {
   var best = getBest('visual-memory');
   bestChip.textContent = best !== null ? 'Best: ' + best + ' levels' : 'No record yet';
 }
 
+function clearTimers() {
+  if (showTimer) { clearTimeout(showTimer); showTimer = null; }
+  if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; }
+}
+
 function startSession() {
+  clearTimers();
   level = 1;
   nextLevel();
 }
 
 function nextLevel() {
-  var count = level + 2;
+  clearTimers();
+  var count = Math.min(2 + level, CELLS);
   pattern = [];
   userClicks = [];
   cells.forEach(function (c) { c.classList.remove('on', 'hit', 'miss'); });
+
   var indices = [];
   while (pattern.length < count) {
-    var r = Math.floor(Math.random() * 9);
+    var r = Math.floor(Math.random() * CELLS);
     if (indices.indexOf(r) === -1) { indices.push(r); pattern.push(r); }
   }
+
   state = 'showing';
   pattern.forEach(function (i) { cells[i].classList.add('on'); });
-  roundInfo.textContent = 'Level ' + level + ' — memorize the pattern';
-  setTimeout(function () {
+  roundInfo.textContent = 'Level ' + level + ' — memorize ' + count + ' tiles';
+
+  var showTime = Math.max(1800 - level * 120, 600);
+  showTimer = setTimeout(function () {
+    showTimer = null;
     pattern.forEach(function (i) { cells[i].classList.remove('on'); });
     state = 'input';
     roundInfo.textContent = 'Your turn — click the lit tiles';
-  }, 1500 + level * 200);
+  }, showTime);
 }
 
 function endSession() {
@@ -115,8 +112,8 @@ function endSession() {
   roundInfo.textContent = '';
   bigScore.textContent = score;
   bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
-  pctText.textContent = 'Better than ' + percentile(score, AVG, AVG_SD) + '% of users';
-  markYou(score);
+  pctText.textContent = 'Better than ' + percentile(score, 9, 3) + '% of users';
+  updateCompare(score);
   pushHistory('visual-memory', score);
   drawProg();
   saveBest('visual-memory', score, false);
@@ -139,7 +136,10 @@ grid.addEventListener('click', function (e) {
   if (pattern.indexOf(i) !== -1) {
     cell.classList.add('hit');
     userClicks.push(i);
-    if (userClicks.length === pattern.length) { level++; setTimeout(nextLevel, 500); }
+    if (userClicks.length === pattern.length) {
+      level++;
+      nextTimer = setTimeout(nextLevel, 500);
+    }
   } else {
     cell.classList.add('miss');
     pattern.forEach(function (pi) { cells[pi].classList.add('hit'); });
@@ -154,6 +154,7 @@ btnShare.addEventListener('click', function () {
     .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-drawCurves(); drawProg(); showBestChip();
 var savedBest = getBest('visual-memory');
-if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, AVG, AVG_SD) + '%'; markYou(savedBest); }
+updateCompare(savedBest);
+drawProg(); showBestChip();
+if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, 9, 3) + '%'; }

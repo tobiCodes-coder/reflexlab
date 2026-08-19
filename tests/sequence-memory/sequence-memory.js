@@ -7,18 +7,19 @@ var btnPlay = byId('btnPlay');
 var btnShare = byId('btnShare');
 var msg = byId('msg');
 
-var AVG = 7, AVG_SD = 2;
-var ELITE = 12, ELITE_SD = 3;
+var CELLS = 12;
 
 var state = 'idle';
 var sequence = [];
 var userSeq = [];
 var level = 1;
 var lastScore = null;
+var showTimer = null;
+var nextTimer = null;
 
 var cells = [];
 (function buildGrid() {
-  for (var i = 0; i < 9; i++) {
+  for (var i = 0; i < CELLS; i++) {
     var c = document.createElement('div');
     c.className = 'mem-cell';
     c.setAttribute('data-i', i);
@@ -36,32 +37,14 @@ function percentile(val, mean, sd) {
   return Math.round(cdf * 100);
 }
 
-var MIN = 0, MAX = 16, W = 600, H = 200;
-function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average users', value: 7, cls: 'avg' },
+    { label: 'Elite memory', value: 12, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'lvl');
 }
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(AVG, AVG_SD));
-  byId('proCurve').setAttribute('d', curvePath(ELITE, ELITE_SD));
-}
-function markYou(v) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x); line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + v;
-  lab.style.display = 'block';
-}
+
 function drawProg() {
   var hist = getHistory('sequence-memory');
   var svg = byId('progChart');
@@ -79,45 +62,55 @@ function drawProg() {
   }
   svg.innerHTML = '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
 }
+
 function showBestChip() {
   var best = getBest('sequence-memory');
   bestChip.textContent = best !== null ? 'Best: ' + best + ' levels' : 'No record yet';
 }
 
+function clearTimers() {
+  if (showTimer) { clearInterval(showTimer); showTimer = null; }
+  if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; }
+}
+
 function startSession() {
+  clearTimers();
+  sequence = [];
   level = 1;
   nextLevel();
 }
 
 function nextLevel() {
-  sequence.push(Math.floor(Math.random() * 9));
+  clearTimers();
+  sequence.push(Math.floor(Math.random() * CELLS));
   userSeq = [];
   state = 'showing';
   roundInfo.textContent = 'Level ' + level + ' — watch the sequence';
   var i = 0;
-  var show = setInterval(function () {
+  var speed = Math.max(500 - level * 15, 260);
+  showTimer = setInterval(function () {
     if (i > 0) cells[sequence[i - 1]].classList.remove('on');
     if (i < sequence.length) {
       cells[sequence[i]].classList.add('on');
       i++;
     } else {
-      clearInterval(show);
+      clearInterval(showTimer);
+      showTimer = null;
       state = 'input';
       roundInfo.textContent = 'Your turn — repeat the sequence';
     }
-  }, 500);
+  }, speed);
 }
 
 function endSession() {
   state = 'done';
   var score = level - 1;
   lastScore = score;
-
   roundInfo.textContent = '';
   bigScore.textContent = score;
   bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
-  pctText.textContent = 'Better than ' + percentile(score, AVG, AVG_SD) + '% of users';
-  markYou(score);
+  pctText.textContent = 'Better than ' + percentile(score, 7, 2) + '% of users';
+  updateCompare(score);
   pushHistory('sequence-memory', score);
   drawProg();
   saveBest('sequence-memory', score, false);
@@ -144,7 +137,7 @@ grid.addEventListener('click', function (e) {
   if (userSeq[idx] !== sequence[idx]) { endSession(); return; }
   if (userSeq.length === sequence.length) {
     level++;
-    setTimeout(nextLevel, 400);
+    nextTimer = setTimeout(nextLevel, 400);
   }
 });
 
@@ -155,6 +148,7 @@ btnShare.addEventListener('click', function () {
     .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-drawCurves(); drawProg(); showBestChip();
 var savedBest = getBest('sequence-memory');
-if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, AVG, AVG_SD) + '%'; markYou(savedBest); }
+updateCompare(savedBest);
+drawProg(); showBestChip();
+if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, 7, 2) + '%'; }

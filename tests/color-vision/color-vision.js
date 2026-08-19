@@ -7,13 +7,11 @@ var btnPlay = byId('btnPlay');
 var btnShare = byId('btnShare');
 var msg = byId('msg');
 
-var AVG = 7, AVG_SD = 2.5;
-var ELITE = 15, ELITE_SD = 4;
-
 var state = 'idle';
 var level = 1;
 var oddIndex = -1;
 var lastScore = null;
+var nextTimer = null;
 
 function gridCols(lvl) { return Math.min(2 + Math.floor((lvl - 1) / 2), 8); }
 function colorDiff(lvl) { return Math.max(24 - lvl * 2, 2); }
@@ -26,32 +24,15 @@ function percentile(val, mean, sd) {
   var cdf = z > 0 ? 1 - p : p;
   return Math.round(cdf * 100);
 }
-var MIN = 0, MAX = 20, W = 600, H = 200;
-function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average users', value: 7, cls: 'avg' },
+    { label: 'Elite vision', value: 15, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'lvl');
 }
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(AVG, AVG_SD));
-  byId('proCurve').setAttribute('d', curvePath(ELITE, ELITE_SD));
-}
-function markYou(v) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x); line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + v;
-  lab.style.display = 'block';
-}
+
 function drawProg() {
   var hist = getHistory('color-vision');
   var svg = byId('progChart');
@@ -69,17 +50,20 @@ function drawProg() {
   }
   svg.innerHTML = '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
 }
+
 function showBestChip() {
   var best = getBest('color-vision');
   bestChip.textContent = best !== null ? 'Best: level ' + best : 'No record yet';
 }
 
 function startSession() {
+  if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; }
   level = 1;
   nextLevel();
 }
 
 function nextLevel() {
+  if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; }
   var cols = gridCols(level);
   var total = cols * cols;
   oddIndex = Math.floor(Math.random() * total);
@@ -109,8 +93,8 @@ function endSession() {
   roundInfo.textContent = '';
   bigScore.textContent = score;
   bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
-  pctText.textContent = 'Better than ' + percentile(score, AVG, AVG_SD) + '% of users';
-  markYou(score);
+  pctText.textContent = 'Better than ' + percentile(score, 7, 2.5) + '% of users';
+  updateCompare(score);
   pushHistory('color-vision', score);
   drawProg();
   saveBest('color-vision', score, false);
@@ -130,8 +114,11 @@ grid.addEventListener('click', function (e) {
   var cell = e.target.closest('.mem-cell');
   if (!cell) return;
   var i = Number(cell.getAttribute('data-i'));
-  if (i === oddIndex) { cell.style.outline = '3px solid #4ade80'; level++; setTimeout(nextLevel, 400); }
-  else {
+  if (i === oddIndex) {
+    cell.style.outline = '3px solid #4ade80';
+    level++;
+    nextTimer = setTimeout(nextLevel, 400);
+  } else {
     cell.style.outline = '3px solid #f87171';
     var cells = grid.querySelectorAll('.mem-cell');
     cells[oddIndex].style.outline = '3px solid #4ade80';
@@ -146,6 +133,7 @@ btnShare.addEventListener('click', function () {
     .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-drawCurves(); drawProg(); showBestChip();
 var savedBest = getBest('color-vision');
-if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, AVG, AVG_SD) + '%'; markYou(savedBest); }
+updateCompare(savedBest);
+drawProg(); showBestChip();
+if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, 7, 2.5) + '%'; }

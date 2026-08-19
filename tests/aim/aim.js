@@ -10,11 +10,10 @@ var btnShare = byId('btnShare');
 var msg = byId('msg');
 
 var TARGETS = 20;
-var AVG_MS = 700, AVG_SD = 150;
-var PRO_MS = 400, PRO_SD = 80;
 
 var state = 'idle';
 var hits = 0;
+var misses = 0;
 var times = [];
 var targetStart = 0;
 var lastAvg = null;
@@ -29,32 +28,14 @@ function percentile(val, mean, sd, lowerBetter) {
   return Math.round(pct);
 }
 
-var MIN = 200, MAX = 1100, W = 600, H = 200;
-function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average users', value: 700, cls: 'avg' },
+    { label: 'Pro FPS players', value: 400, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'ms');
 }
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(AVG_MS, AVG_SD));
-  byId('proCurve').setAttribute('d', curvePath(PRO_MS, PRO_SD));
-}
-function markYou(v) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x); line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + v + 'ms';
-  lab.style.display = 'block';
-}
+
 function drawProg() {
   var hist = getHistory('aim');
   var svg = byId('progChart');
@@ -79,8 +60,8 @@ function showBestChip() {
 
 function placeTarget() {
   var box = arena.getBoundingClientRect();
-  var maxX = box.width - 60;
-  var maxY = box.height - 60;
+  var maxX = box.width - 70;
+  var maxY = box.height - 70;
   target.style.left = (10 + Math.random() * maxX) + 'px';
   target.style.top = (10 + Math.random() * maxY) + 'px';
   target.style.display = 'block';
@@ -88,11 +69,10 @@ function placeTarget() {
 }
 
 function startSession() {
-  hits = 0;
-  times = [];
+  hits = 0; misses = 0; times = [];
   state = 'running';
   arenaMsg.textContent = '';
-  roundInfo.textContent = 'Target ' + (hits + 1) + ' / ' + TARGETS;
+  roundInfo.textContent = 'Target 1 / ' + TARGETS;
   msg.textContent = '';
   placeTarget();
 }
@@ -101,20 +81,21 @@ function endSession() {
   state = 'done';
   target.style.display = 'none';
   var average = Math.round(times.reduce(function (a, b) { return a + b; }, 0) / times.length);
+  var accuracy = Math.round(hits / (hits + misses) * 100);
   lastAvg = average;
 
-  arenaMsg.textContent = 'Session complete! Click Play again.';
+  arenaMsg.textContent = 'Session complete! Click to play again.';
   roundInfo.textContent = '';
 
   bigScore.textContent = average;
   bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
-  pctText.textContent = 'Faster than ' + percentile(average, AVG_MS, AVG_SD, true) + '% of players';
-  markYou(average);
+  pctText.textContent = 'Faster than ' + percentile(average, 700, 150, true) + '% of players';
+  updateCompare(average);
   pushHistory('aim', average);
   drawProg();
   saveBest('aim', average, true);
   showBestChip();
-  msg.textContent = ratingFor(average);
+  msg.textContent = ratingFor(average) + ' · Accuracy: ' + accuracy + '% (' + misses + ' miss)';
 }
 
 function ratingFor(v) {
@@ -135,6 +116,14 @@ target.addEventListener('click', function (e) {
   placeTarget();
 });
 
+arena.addEventListener('click', function () {
+  if (state === 'idle' || state === 'done') startSession();
+  else if (state === 'running') {
+    misses++;
+    roundInfo.textContent = 'Target ' + (hits + 1) + ' / ' + TARGETS + ' — Miss!';
+  }
+});
+
 btnPlay.addEventListener('click', startSession);
 btnShare.addEventListener('click', function () {
   if (lastAvg === null) { msg.textContent = 'Play one session first!'; return; }
@@ -142,6 +131,8 @@ btnShare.addEventListener('click', function () {
     .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-drawCurves(); drawProg(); showBestChip();
+arenaMsg.textContent = 'Click anywhere to start';
 var savedBest = getBest('aim');
-if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: faster than ' + percentile(savedBest, AVG_MS, AVG_SD, true) + '%'; markYou(savedBest); }
+updateCompare(savedBest);
+drawProg(); showBestChip();
+if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: faster than ' + percentile(savedBest, 700, 150, true) + '%'; }

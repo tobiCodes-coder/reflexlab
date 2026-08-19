@@ -8,8 +8,6 @@ var btnShare = byId('btnShare');
 var msg = byId('msg');
 
 var DURATION = 5000;
-var AVG_CPS = 6.5, AVG_SD = 1.8;
-var PRO_CPS = 10, PRO_SD = 2;
 
 var state = 'idle';
 var startTime = 0;
@@ -25,32 +23,14 @@ function percentile(val, mean, sd) {
   return Math.round(cdf * 100);
 }
 
-var MIN = 0, MAX = 15, W = 600, H = 200;
-function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average clickers', value: 6.5, cls: 'avg' },
+    { label: 'Pro gamers', value: 10, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'CPS');
 }
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(AVG_CPS, AVG_SD));
-  byId('proCurve').setAttribute('d', curvePath(PRO_CPS, PRO_SD));
-}
-function markYou(v) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x); line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + v.toFixed(1) + ' CPS';
-  lab.style.display = 'block';
-}
+
 function drawProg() {
   var hist = getHistory('cps');
   var svg = byId('progChart');
@@ -86,10 +66,7 @@ function startSession() {
     if (left < 0) left = 0;
     roundInfo.textContent = left + ' seconds left';
   }, 100);
-  setTimeout(function () {
-    clearInterval(interval);
-    endSession();
-  }, DURATION);
+  setTimeout(function () { clearInterval(interval); endSession(); }, DURATION);
 }
 
 function endSession() {
@@ -98,13 +75,13 @@ function endSession() {
   lastCPS = cps;
 
   gameBox.className = 'game-box';
-  gameBox.textContent = 'Session complete! Click to play again.';
+  gameBox.textContent = 'Round complete! Press Play for a new round.';
   roundInfo.textContent = '';
 
   bigScore.textContent = cps.toFixed(1);
   bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
-  pctText.textContent = 'Faster than ' + percentile(cps, AVG_CPS, AVG_SD) + '% of clickers';
-  markYou(cps);
+  pctText.textContent = 'Faster than ' + percentile(cps, 6.5, 1.8) + '% of clickers';
+  updateCompare(Number(cps.toFixed(1)));
   pushHistory('cps', cps);
   drawProg();
   saveBest('cps', cps, false);
@@ -120,8 +97,9 @@ function ratingFor(v) {
 }
 
 gameBox.addEventListener('click', function () {
-  if (state === 'idle' || state === 'done') startSession();
+  if (state === 'idle') startSession();
   else if (state === 'running') clicks++;
+  else if (state === 'done') msg.textContent = 'Press the Play button for a new round.';
 });
 btnPlay.addEventListener('click', startSession);
 btnShare.addEventListener('click', function () {
@@ -130,6 +108,7 @@ btnShare.addEventListener('click', function () {
     .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-drawCurves(); drawProg(); showBestChip();
 var savedBest = getBest('cps');
-if (savedBest !== null) { bigScore.textContent = savedBest.toFixed(1); pctText.textContent = 'Best: faster than ' + percentile(savedBest, AVG_CPS, AVG_SD) + '%'; markYou(savedBest); }
+updateCompare(savedBest !== null ? Number(savedBest.toFixed(1)) : null);
+drawProg(); showBestChip();
+if (savedBest !== null) { bigScore.textContent = savedBest.toFixed(1); pctText.textContent = 'Best: faster than ' + percentile(savedBest, 6.5, 1.8) + '%'; }

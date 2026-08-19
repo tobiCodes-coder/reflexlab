@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Typing Speed Test — ReflexLab</title>
-  <meta name="description" content="Test your typing speed in WPM with live accuracy. Compare yourself with average and professional typists. Free, no signup." />
+  <meta name="description" content="Test your typing speed in WPM with live accuracy highlighting. Compare with average and professional typists. Free, no signup." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
   <link rel="stylesheet" href="../../css/test.css" />
@@ -21,7 +21,7 @@
         <div class="pct" id="pctText">Play to see your ranking</div>
         <div><span class="best-chip" id="bestChip">No record yet</span></div>
         <div class="card-actions">
-          <button class="btn btn-primary" id="btnPlay">Play</button>
+          <button class="btn btn-primary" id="btnPlay">New text</button>
           <button class="btn btn-ghost" id="btnShare">Share</button>
         </div>
       </div>
@@ -31,17 +31,7 @@
 
       <div class="stats-card">
         <h2>Typing Speed Statistics</h2>
-        <div class="chart-legend">
-          <span><i class="dot you"></i> You</span>
-          <span><i class="dot avg"></i> Average typists</span>
-          <span><i class="dot gamers"></i> Professional typists</span>
-        </div>
-        <svg id="chart" viewBox="0 0 600 200">
-          <path id="avgCurve" fill="rgba(148,163,184,0.2)" stroke="#94a3b8" stroke-width="1.5"></path>
-          <path id="proCurve" fill="rgba(74,222,128,0.12)" stroke="#4ade80" stroke-width="1.5"></path>
-          <line id="youLine" y1="0" y2="200" stroke="#22d3ee" stroke-width="2" style="display:none"></line>
-          <text id="youLabel" fill="#22d3ee" font-size="12" style="display:none"></text>
-        </svg>
+        <div id="compareBox" class="compare-box"></div>
         <div class="hist-title">YOUR PROGRESS (last 5 sessions)</div>
         <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
       </div>

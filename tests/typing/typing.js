@@ -7,16 +7,17 @@ var btnPlay = byId('btnPlay');
 var btnShare = byId('btnShare');
 var msg = byId('msg');
 
-var AVG_WPM = 40, AVG_SD = 15;
-var PRO_WPM = 80, PRO_SD = 20;
-
 var SAMPLES = [
   "The quick brown fox jumps over the lazy dog while the farmer watches from the field.",
   "Every great journey begins with a single step forward into the unknown world ahead.",
   "Practice makes perfect when you commit to small improvements every single day.",
   "Technology connects us across oceans while simple conversations bridge the gaps between hearts.",
   "Reading books expands the mind far beyond what any single experience could teach alone.",
-  "Mountains rise from the earth just as dreams rise from the determined human spirit."
+  "Mountains rise from the earth just as dreams rise from the determined human spirit.",
+  "A river cuts through rock not because of its power but because of its persistence.",
+  "The best way to predict the future is to create it with your own two hands today.",
+  "Stars cannot shine without darkness and neither can you without facing your challenges.",
+  "Success is not final and failure is not fatal it is the courage to continue that counts."
 ];
 
 var state = 'idle';
@@ -33,7 +34,7 @@ function renderTarget() {
     var cls = 'pending';
     if (i < typed.length) cls = typed[i] === text[i] ? 'ok' : 'bad';
     else if (i === typed.length) cls = 'current';
-    html += '<span class="' + cls + '">' + (text[i] === ' ' ? '&nbsp;' : text[i]) + '</span>';
+    html += '<span class="' + cls + '">' + text[i] + '</span>';
   }
   target.innerHTML = html;
 }
@@ -47,32 +48,14 @@ function percentile(val, mean, sd) {
   return Math.round(cdf * 100);
 }
 
-var MIN = 0, MAX = 120, W = 600, H = 200;
-function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average typists', value: 40, cls: 'avg' },
+    { label: 'Professionals', value: 80, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'WPM');
 }
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(AVG_WPM, AVG_SD));
-  byId('proCurve').setAttribute('d', curvePath(PRO_WPM, PRO_SD));
-}
-function markYou(v) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x); line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + Math.round(v) + ' WPM';
-  lab.style.display = 'block';
-}
+
 function drawProg() {
   var hist = getHistory('typing');
   var svg = byId('progChart');
@@ -95,13 +78,12 @@ function showBestChip() {
   bestChip.textContent = best !== null ? 'Best: ' + best + ' WPM' : 'No record yet';
 }
 
-function startSession() {
+function loadNewText() {
   text = pickText();
   typeInput.value = '';
   typeInput.disabled = false;
-  state = 'waiting';
+  state = 'idle';
   renderTarget();
-  typeInput.focus();
   msg.textContent = '';
 }
 
@@ -109,14 +91,13 @@ function endSession() {
   state = 'done';
   typeInput.disabled = true;
   var elapsed = (performance.now() - startTime) / 1000 / 60;
-  var chars = text.length;
-  var wpm = Math.round((chars / 5) / elapsed);
+  var wpm = Math.round((text.length / 5) / elapsed);
   lastWPM = wpm;
 
   bigScore.textContent = wpm;
   bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
-  pctText.textContent = 'Faster than ' + percentile(wpm, AVG_WPM, AVG_SD) + '% of typists';
-  markYou(wpm);
+  pctText.textContent = 'Faster than ' + percentile(wpm, 40, 15) + '% of typists';
+  updateCompare(wpm);
   pushHistory('typing', wpm);
   drawProg();
   saveBest('typing', wpm, false);
@@ -132,19 +113,20 @@ function ratingFor(v) {
 }
 
 typeInput.addEventListener('input', function () {
-  if (state === 'waiting') { state = 'running'; startTime = performance.now(); }
+  if (state === 'idle') { state = 'running'; startTime = performance.now(); }
   if (state !== 'running') return;
   renderTarget();
   if (typeInput.value.length >= text.length) endSession();
 });
-
-btnPlay.addEventListener('click', startSession);
+btnPlay.addEventListener('click', function () { loadNewText(); typeInput.focus(); });
 btnShare.addEventListener('click', function () {
   if (lastWPM === null) { msg.textContent = 'Play one session first!'; return; }
   copyText('My typing speed: ' + lastWPM + ' WPM on ReflexLab. Beat me!')
     .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-drawCurves(); drawProg(); showBestChip();
+loadNewText();
 var savedBest = getBest('typing');
-if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: faster than ' + percentile(savedBest, AVG_WPM, AVG_SD) + '%'; markYou(savedBest); }
+updateCompare(savedBest);
+drawProg(); showBestChip();
+if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: faster than ' + percentile(savedBest, 40, 15) + '%'; }

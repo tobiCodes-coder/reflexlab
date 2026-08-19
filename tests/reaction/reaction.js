@@ -1,9 +1,3 @@
-/* ============================================
-   REFLEXLAB - REACTION TIME (FINAL v2)
-   Chart: you + average users + gamers
-   Progress: last 5 session line chart
-   ============================================ */
-
 var gameBox = byId('gameBox');
 var roundInfo = byId('roundInfo');
 var bigScore = byId('bigScore');
@@ -14,8 +8,8 @@ var btnShare = byId('btnShare');
 var msg = byId('msg');
 
 var ROUNDS = 5;
-var HUMAN_AVG = 273, HUMAN_SD = 60;
-var GAMER_AVG = 200, GAMER_SD = 40;
+var HUMAN_AVG = 273;
+var GAMER_AVG = 200;
 
 var state = 'idle';
 var timer = null;
@@ -25,7 +19,7 @@ var lastAvg = null;
 
 /* ---------- Percentile ---------- */
 function fasterThan(ms) {
-  var z = (ms - HUMAN_AVG) / HUMAN_SD;
+  var z = (ms - HUMAN_AVG) / 60;
   var t = 1 / (1 + 0.2316419 * Math.abs(z));
   var d = 0.3989423 * Math.exp(-z * z / 2);
   var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
@@ -33,82 +27,43 @@ function fasterThan(ms) {
   return Math.round((1 - cdf) * 100);
 }
 
-/* ---------- Distribution chart ---------- */
-var MIN = 100, MAX = 600, W = 600, H = 200;
-
-function xPos(ms) { return (ms - MIN) / (MAX - MIN) * W; }
-
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+/* ---------- Comparison bars ---------- */
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average users', value: HUMAN_AVG, cls: 'avg' },
+    { label: 'Pro gamers', value: GAMER_AVG, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'ms');
 }
 
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(HUMAN_AVG, HUMAN_SD));
-  byId('gamerCurve').setAttribute('d', curvePath(GAMER_AVG, GAMER_SD));
-}
-
-function markYou(ms) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, ms)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x);
-  line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + ms + 'ms';
-  lab.style.display = 'block';
-}
-
-/* ---------- Progress line chart ---------- */
+/* ---------- Progress line ---------- */
 function drawProg() {
   var hist = getHistory('reaction');
   var svg = byId('progChart');
-
   if (hist.length < 2) {
     svg.innerHTML = '<text x="300" y="70" fill="#94a3b8" font-size="12" text-anchor="middle">Play at least 2 sessions to see your progress line</text>';
     return;
   }
-
   var min = Math.min.apply(null, hist) - 20;
   var max = Math.max.apply(null, hist) + 20;
-  var pts = [];
+  var pts = [], dots = '';
   for (var i = 0; i < hist.length; i++) {
     var x = 50 + i * (500 / (hist.length - 1));
-    var y = 25 + ((hist[i] - min) / (max - min)) * 90; // kom ms = upore = better
-    pts.push([x, y, hist[i]]);
+    var y = 25 + ((hist[i] - min) / (max - min)) * 90;
+    pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+    dots += '<circle cx="' + x + '" cy="' + y + '" r="4" fill="#22d3ee"/>';
+    dots += '<text x="' + x + '" y="' + (y - 10) + '" fill="#94a3b8" font-size="11" text-anchor="middle">' + hist[i] + '</text>';
   }
-
-  var line = '';
-  var dots = '';
-  for (var j = 0; j < pts.length; j++) {
-    line += (j ? ' L' : 'M') + pts[j][0].toFixed(1) + ',' + pts[j][1].toFixed(1);
-    dots += '<circle cx="' + pts[j][0] + '" cy="' + pts[j][1] + '" r="4" fill="#22d3ee"/>';
-    dots += '<text x="' + pts[j][0] + '" y="' + (pts[j][1] - 10) + '" fill="#94a3b8" font-size="11" text-anchor="middle">' + pts[j][2] + '</text>';
-  }
-
-  svg.innerHTML =
-    '<path d="' + line + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' +
-    dots;
+  svg.innerHTML = '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
 }
 
-/* ---------- Best chip ---------- */
 function showBestChip() {
   var best = getBest('reaction');
   bestChip.textContent = best !== null ? 'Best: ' + best + ' ms' : 'No record yet';
 }
 
 /* ---------- Game logic ---------- */
-function startSession() {
-  times = [];
-  nextRound();
-}
+function startSession() { times = []; nextRound(); }
 
 function nextRound() {
   state = 'waiting';
@@ -156,12 +111,10 @@ function endSession() {
   roundInfo.textContent = '';
 
   bigScore.textContent = average;
-  bigScore.classList.remove('pop');
-  void bigScore.offsetWidth;
-  bigScore.classList.add('pop');
+  bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
   pctText.textContent = 'Faster than ' + fasterThan(average) + '% of people';
 
-  markYou(average);
+  updateCompare(average);
   pushHistory('reaction', average);
   drawProg();
 
@@ -177,7 +130,6 @@ function ratingFor(ms) {
   return 'A bit slow — practice will fix it!';
 }
 
-/* ---------- Events ---------- */
 gameBox.addEventListener('click', function () {
   if (state === 'idle' || state === 'done') startSession();
   else if (state === 'waiting') tooSoon();
@@ -192,17 +144,16 @@ btnPlay.addEventListener('click', function () {
 
 btnShare.addEventListener('click', function () {
   if (lastAvg === null) { msg.textContent = 'Play one session first!'; return; }
-  var text = 'My reaction time: ' + lastAvg + ' ms (faster than ' + fasterThan(lastAvg) + '% of people) on ReflexLab. Beat me!';
-  copyText(text).then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
+  copyText('My reaction time: ' + lastAvg + ' ms (faster than ' + fasterThan(lastAvg) + '% of people) on ReflexLab. Beat me!')
+    .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
 /* ---------- Init ---------- */
-drawCurves();
+updateCompare(getBest('reaction'));
 drawProg();
 showBestChip();
 var savedBest = getBest('reaction');
 if (savedBest !== null) {
   bigScore.textContent = savedBest;
   pctText.textContent = 'Best: faster than ' + fasterThan(savedBest) + '% of people';
-  markYou(savedBest);
 }

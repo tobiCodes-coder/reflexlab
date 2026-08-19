@@ -9,9 +9,6 @@ var btnPlay = byId('btnPlay');
 var btnShare = byId('btnShare');
 var msg = byId('msg');
 
-var AVG = 8, AVG_SD = 3;
-var ELITE = 18, ELITE_SD = 5;
-
 var WORDS = [
   'apple', 'river', 'stone', 'tiger', 'cloud', 'maple', 'ember', 'frost', 'grape', 'harbor',
   'ivory', 'juniper', 'koala', 'lemon', 'mango', 'nectar', 'olive', 'pearl', 'quartz', 'raven',
@@ -36,32 +33,15 @@ function percentile(val, mean, sd) {
   var cdf = z > 0 ? 1 - p : p;
   return Math.round(cdf * 100);
 }
-var MIN = 0, MAX = 25, W = 600, H = 200;
-function xPos(v) { return (v - MIN) / (MAX - MIN) * W; }
-function curvePath(mean, sd) {
-  var pts = 'M0,' + H;
-  for (var i = 0; i <= 60; i++) {
-    var x = MIN + (MAX - MIN) * i / 60;
-    var y = Math.exp(-0.5 * Math.pow((x - mean) / sd, 2));
-    pts += ' L' + xPos(x).toFixed(1) + ',' + (H - 8 - y * (H - 40)).toFixed(1);
-  }
-  return pts + ' L' + W + ',' + H + ' Z';
+
+function updateCompare(youVal) {
+  byId('compareBox').innerHTML = renderCompare([
+    { label: 'Average users', value: 8, cls: 'avg' },
+    { label: 'Elite memory', value: 18, cls: 'pro' },
+    { label: 'You', value: youVal, cls: 'you' }
+  ], 'words');
 }
-function drawCurves() {
-  byId('avgCurve').setAttribute('d', curvePath(AVG, AVG_SD));
-  byId('proCurve').setAttribute('d', curvePath(ELITE, ELITE_SD));
-}
-function markYou(v) {
-  var x = xPos(Math.max(MIN, Math.min(MAX, v)));
-  var line = byId('youLine');
-  var lab = byId('youLabel');
-  line.setAttribute('x1', x); line.setAttribute('x2', x);
-  line.style.display = 'block';
-  lab.setAttribute('x', Math.min(x + 6, W - 80));
-  lab.setAttribute('y', 24);
-  lab.textContent = 'You: ' + v;
-  lab.style.display = 'block';
-}
+
 function drawProg() {
   var hist = getHistory('verbal-memory');
   var svg = byId('progChart');
@@ -79,6 +59,7 @@ function drawProg() {
   }
   svg.innerHTML = '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
 }
+
 function showBestChip() {
   var best = getBest('verbal-memory');
   bestChip.textContent = best !== null ? 'Best: ' + best + ' words' : 'No record yet';
@@ -127,8 +108,8 @@ function endSession() {
   roundInfo.textContent = '';
   bigScore.textContent = score;
   bigScore.classList.remove('pop'); void bigScore.offsetWidth; bigScore.classList.add('pop');
-  pctText.textContent = 'Better than ' + percentile(score, AVG, AVG_SD) + '% of users';
-  markYou(score);
+  pctText.textContent = 'Better than ' + percentile(score, 8, 3) + '% of users';
+  updateCompare(score);
   pushHistory('verbal-memory', score);
   drawProg();
   saveBest('verbal-memory', score, false);
@@ -152,6 +133,7 @@ btnShare.addEventListener('click', function () {
     .then(function () { msg.textContent = 'Score copied — share it anywhere!'; });
 });
 
-drawCurves(); drawProg(); showBestChip();
 var savedBest = getBest('verbal-memory');
-if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, AVG, AVG_SD) + '%'; markYou(savedBest); }
+updateCompare(savedBest);
+drawProg(); showBestChip();
+if (savedBest !== null) { bigScore.textContent = savedBest; pctText.textContent = 'Best: better than ' + percentile(savedBest, 8, 3) + '%'; }
