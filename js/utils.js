@@ -79,12 +79,18 @@ function iconSvg(id) {
 function initLayout() {
   var root = siteRoot();
 
-    /* Favicon + theme color (sob page e auto) */
+  /* Favicon + theme color */
   document.head.insertAdjacentHTML('beforeend',
     '<link rel="icon" type="image/svg+xml" href="' + root + 'favicon.svg">' +
     '<meta name="theme-color" content="#0a0e1a">'
   );
 
+  /* Cloudflare Web Analytics (auto-inject, sob page e) */
+  document.head.insertAdjacentHTML('beforeend',
+    '<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon=\'{"token": "91f8d5feb2f64822bef2583dad7b55c0"}\'></script>'
+  );
+
+  /* Header */
   var header =
     '<header class="site-header">' +
     '  <div class="header-inner">' +
@@ -97,6 +103,7 @@ function initLayout() {
     '</header>';
   document.body.insertAdjacentHTML('afterbegin', header);
 
+  /* Sidebar — shudhu test pages e */
   if (window.location.pathname.indexOf('/tests/') !== -1) {
     document.body.classList.add('has-side');
     var tests = [
@@ -119,6 +126,7 @@ function initLayout() {
     document.body.insertAdjacentHTML('afterbegin', html);
   }
 
+  /* Footer */
   var footer =
     '<footer class="site-footer">' +
     '  <div class="footer-inner">' +
