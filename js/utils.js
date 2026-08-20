@@ -79,6 +79,12 @@ function iconSvg(id) {
 function initLayout() {
   var root = siteRoot();
 
+    /* Favicon + theme color (sob page e auto) */
+  document.head.insertAdjacentHTML('beforeend',
+    '<link rel="icon" type="image/svg+xml" href="' + root + 'favicon.svg">' +
+    '<meta name="theme-color" content="#0a0e1a">'
+  );
+
   var header =
     '<header class="site-header">' +
     '  <div class="header-inner">' +
