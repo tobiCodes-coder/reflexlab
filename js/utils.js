@@ -85,10 +85,12 @@ function initLayout() {
     '<meta name="theme-color" content="#0a0e1a">'
   );
 
-  /* Cloudflare Web Analytics (auto-inject, sob page e) */
-  document.head.insertAdjacentHTML('beforeend',
-    '<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon=\'{"token": "91f8d5feb2f64822bef2583dad7b55c0"}\'></script>'
-  );
+   /* Cloudflare Web Analytics (createElement = script thik moto load hobe) */
+  var cf = document.createElement('script');
+  cf.type = 'module';
+  cf.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+  cf.setAttribute('data-cf-beacon', '{"token": "91f8d5feb2f64822bef2583dad7b55c0"}');
+  document.head.appendChild(cf);
 
   /* Header */
   var header =
