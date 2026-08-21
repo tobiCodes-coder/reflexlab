@@ -271,3 +271,8 @@
   from { transform: scale(0.4); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+.game-box:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}

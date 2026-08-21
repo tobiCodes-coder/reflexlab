@@ -46,15 +46,34 @@ function drawProg() {
   }
   var min = Math.min.apply(null, hist) - 20;
   var max = Math.max.apply(null, hist) + 20;
+  var bestVal = Math.min.apply(null, hist);
+
+  /* horizontal grid lines (4 bands) + Y labels */
+  var grid = '';
+  var GRID_LINES = 4;
+  for (var g = 0; g <= GRID_LINES; g++) {
+    var gy = 25 + (g / GRID_LINES) * 90;
+    var gVal = Math.round(max - (g / GRID_LINES) * (max - min));
+    grid += '<line x1="45" y1="' + gy + '" x2="560" y2="' + gy + '" stroke="#1e293b" stroke-width="1"/>';
+    grid += '<text x="38" y="' + (gy + 3) + '" fill="#64748b" font-size="9" text-anchor="end">' + gVal + '</text>';
+  }
+
   var pts = [], dots = '';
   for (var i = 0; i < hist.length; i++) {
     var x = 50 + i * (500 / (hist.length - 1));
     var y = 25 + ((hist[i] - min) / (max - min)) * 90;
     pts.push(x.toFixed(1) + ',' + y.toFixed(1));
-    dots += '<circle cx="' + x + '" cy="' + y + '" r="4" fill="#22d3ee"/>';
-    dots += '<text x="' + x + '" y="' + (y - 10) + '" fill="#94a3b8" font-size="11" text-anchor="middle">' + hist[i] + '</text>';
+
+    var isBest = hist[i] === bestVal;
+    var dotColor = isBest ? '#22c55e' : '#22d3ee';
+    var dotR = isBest ? 6 : 4;
+
+    dots += '<circle cx="' + x + '" cy="' + y + '" r="' + dotR + '" fill="' + dotColor + '">' +
+      '<title>Session ' + (i + 1) + ': ' + hist[i] + ' ms' + (isBest ? ' (best)' : '') + '</title>' +
+      '</circle>';
+    dots += '<text x="' + x + '" y="' + (y - 12) + '" fill="#94a3b8" font-size="11" text-anchor="middle">' + hist[i] + '</text>';
   }
-  svg.innerHTML = '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
+  svg.innerHTML = grid + '<path d="M' + pts.join(' L') + '" fill="none" stroke="#22d3ee" stroke-width="2.5"/>' + dots;
 }
 
 function showBestChip() {
@@ -130,11 +149,20 @@ function ratingFor(ms) {
   return 'A bit slow — practice will fix it!';
 }
 
-gameBox.addEventListener('click', function () {
+function handleGameBoxAction() {
   if (state === 'idle' || state === 'done') startSession();
   else if (state === 'waiting') tooSoon();
   else if (state === 'go') finishRound();
   else if (state === 'between') nextRound();
+}
+
+gameBox.addEventListener('click', handleGameBoxAction);
+
+gameBox.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
+    e.preventDefault(); /* stop page scroll on space */
+    handleGameBoxAction();
+  }
 });
 
 btnPlay.addEventListener('click', function () {

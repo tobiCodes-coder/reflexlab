@@ -3,49 +3,155 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reaction Time Test — ReflexLab</title>
-  <meta name="description" content="Test your reaction time with percentile ranking. Compare yourself with average users and pro gamers. Free, no signup." />
+  <title>Reaction Time Test — Free Online Reaction Speed Test</title>
+  <meta name="description" content="Test your reaction time in milliseconds. Game modes, challenges, statistics, achievements and daily challenges — free, no signup, runs in your browser." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
-  <link rel="stylesheet" href="../../css/test.css" />
+  <link rel="stylesheet" href="../../css/reaction.css" />
   <meta property="og:site_name" content="ReflexLab" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Reaction Time Test — ReflexLab" />
-  <meta property="og:description" content="Test your reaction time with percentile ranking. Compare yourself with average users and pro gamers. Free, no signup." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Reaction Time Test — Free Online Reaction Speed Test" />
+  <meta property="og:description" content="Red = wait, green = react. Measure your reaction time in ms with stats, achievements and daily challenges." />
   <meta property="og:url" content="https://reflexlab.tobiascent.workers.dev/tests/reaction/reaction.html" />
   <meta name="twitter:card" content="summary" />
 </head>
 <body>
-  <main class="container">
-    <div class="game-wrap">
-      <div class="crumb"><a href="../../index.html">ReflexLab</a> &gt; Reaction Time</div>
+  <main class="container rt-page">
 
-      <div class="result-card">
-        <div class="title">Reaction Time</div>
-        <div class="big" id="bigScore">—</div>
-        <div class="unit">ms</div>
-        <div class="pct" id="pctText">Play to see your ranking</div>
-        <div><span class="best-chip" id="bestChip">No record yet</span></div>
-        <div class="card-actions">
-          <button class="btn btn-primary" id="btnPlay">Play</button>
-          <button class="btn btn-ghost" id="btnShare">Share</button>
+    <!-- Top bar -->
+    <div class="rt-topbar">
+      <div class="rt-crumb"><a href="../../index.html">ReflexLab</a> <span>›</span> Reaction Time</div>
+      <div class="rt-quick">
+        <button id="rtSound" class="rt-qbtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+        <button id="rtTheme" class="rt-qbtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+        <button id="rtFull" class="rt-qbtn" title="Fullscreen" aria-label="Toggle fullscreen">⛶</button>
+        <button id="rtSettingsBtn" class="rt-qbtn" title="Settings" aria-label="Open settings">⚙</button>
+      </div>
+    </div>
+
+    <!-- Game shell -->
+    <section class="rt-shell">
+
+      <div class="rt-controls">
+        <div class="rt-modes" role="group" aria-label="Game mode">
+          <button class="rt-mode active" data-mode="single">Single</button>
+          <button class="rt-mode" data-mode="3">3 Rounds</button>
+          <button class="rt-mode" data-mode="5">5 Rounds</button>
+          <button class="rt-mode" data-mode="10">10 Rounds</button>
+          <button class="rt-mode" data-mode="endless">Endless</button>
+          <button class="rt-mode" data-mode="nogo">No-Go</button>
+        </div>
+        <div class="rt-diffs" role="group" aria-label="Difficulty">
+          <button class="rt-diff" data-diff="easy">Easy</button>
+          <button class="rt-diff active" data-diff="normal">Normal</button>
+          <button class="rt-diff" data-diff="hard">Hard</button>
+          <button class="rt-diff" data-diff="expert">Expert</button>
         </div>
       </div>
 
-      <div id="gameBox" class="game-box">Click to start</div>
-      <div id="roundInfo" class="score-label"></div>
-
-      <div class="stats-card">
-        <h2>Reaction Time Statistics</h2>
-        <div id="compareBox" class="compare-box"></div>
-        <div class="hist-title">YOUR PROGRESS (last 5 sessions — up = better)</div>
-        <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
+      <div class="rt-hud">
+        <span id="rtRound">—</span>
+        <span id="rtState" class="rt-state">Ready</span>
+        <span id="rtStreak">Streak 0</span>
       </div>
 
-      <p class="msg" id="msg"></p>
+      <div id="rtArea" class="rt-area st-idle" tabindex="0" role="button"
+           aria-label="Reaction area. Click, tap or press your key when it turns green.">
+        <div class="rt-inner">
+          <div class="rt-big" id="rtBig" aria-live="polite">Reaction Time</div>
+          <div class="rt-sub" id="rtSub">Click, tap or press SPACE to start</div>
+          <div class="rt-ms" id="rtMs"></div>
+        </div>
+      </div>
+
+      <div class="rt-actions">
+        <button id="rtStart" class="btn btn-primary">Start</button>
+        <button id="rtAgain" class="btn hidden">Try Again</button>
+        <button id="rtShare" class="btn btn-ghost hidden">Share Result</button>
+      </div>
+
+      <div id="rtSummary" class="rt-summary hidden"></div>
+    </section>
+
+    <!-- Secondary features (tabs) -->
+    <section class="rt-tabs">
+      <nav class="rt-tabnav" role="tablist">
+        <button class="rt-tabbtn active" data-tab="stats">Stats</button>
+        <button class="rt-tabbtn" data-tab="history">History</button>
+        <button class="rt-tabbtn" data-tab="ach">Achievements</button>
+        <button class="rt-tabbtn" data-tab="daily">Daily</button>
+        <button class="rt-tabbtn" data-tab="howto">How to Play</button>
+      </nav>
+
+      <div class="rt-tab" id="tab-stats">
+        <div class="rt-profile" id="rtProfile"></div>
+        <div class="rt-statsgrid" id="rtStatsGrid"></div>
+        <h3 class="rt-h3">You vs Average vs Pro</h3>
+        <div class="chart-box" id="rtCompare"></div>
+      </div>
+
+      <div class="rt-tab hidden" id="tab-history">
+        <h3 class="rt-h3">Last 20 reactions</h3>
+        <div class="rt-graph" id="rtGraph"></div>
+        <div class="rt-histlist" id="rtHistList"></div>
+      </div>
+
+      <div class="rt-tab hidden" id="tab-ach">
+        <div class="rt-achgrid" id="rtAchGrid"></div>
+      </div>
+
+      <div class="rt-tab hidden" id="tab-daily">
+        <div class="rt-daily" id="rtDaily"></div>
+      </div>
+
+      <div class="rt-tab hidden" id="tab-howto">
+        <h3 class="rt-h3">How to play</h3>
+        <ol class="rt-ol">
+          <li>Press <strong>Start</strong> (or click the area / press SPACE).</li>
+          <li>Wait while the area is <strong>red</strong>. Do not click yet.</li>
+          <li>When it turns <strong>green</strong>, click / tap / press your key as fast as you can.</li>
+          <li>Clicking during red = <strong>False Start</strong> (round invalid).</li>
+        </ol>
+        <h3 class="rt-h3">Tips for consistent results</h3>
+        <ul class="rt-ul">
+          <li>Use the same device and input method each time.</li>
+          <li>Rest your finger near the button before the round.</li>
+          <li>Take several attempts — your average matters more than one score.</li>
+          <li>Avoid testing when tired or distracted.</li>
+        </ul>
+        <h3 class="rt-h3">Learn more</h3>
+        <ul class="rt-ul">
+          <li><a href="../../content/average-reaction-time.html">What is the average reaction time?</a></li>
+          <li><a href="../../content/do-reflex-games-work.html">Do brain &amp; reflex games actually work?</a></li>
+        </ul>
+        <p class="rt-note">Performance categories are general game labels — not medical or scientific judgments.</p>
+      </div>
+    </section>
+
+    <!-- Settings modal (JS fills body) -->
+    <div id="rtSettings" class="rt-modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+      <div class="rt-modal-box">
+        <div class="rt-modal-head">
+          <h3>Settings</h3>
+          <button id="rtSettingsClose" class="rt-qbtn" aria-label="Close settings">✕</button>
+        </div>
+        <div class="rt-modal-body" id="rtSettingsBody"></div>
+      </div>
     </div>
+
+    <!-- First-visit hint -->
+    <div id="rtOnboard" class="rt-onboard hidden">
+      <div class="rt-onboard-box">
+        <strong>Welcome!</strong>
+        <p>Red means wait. Green means click. That's it — good luck!</p>
+        <button id="rtOnboardOk" class="btn btn-primary">Got it</button>
+      </div>
+    </div>
+
   </main>
+
   <script src="../../js/utils.js"></script>
-  <script src="reaction.js"></script>
+  <script src="../../js/reaction-data.js"></script>
+  <script src="../../js/reaction.js"></script>
 </body>
 </html>

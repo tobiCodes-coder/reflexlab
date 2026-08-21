@@ -3,52 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Number Memory Test — ReflexLab</title>
-  <meta name="description" content="How many digits can you remember? Test your number memory and compare with average humans. Free, no signup." />
+  <title>Number Memory Test — Free Online Digit Memory Game</title>
+  <meta name="description" content="Memorize the number, type it back exactly. Progressive digit growth, lives, reverse and practice modes, statistics, achievements and daily challenges — free, in your browser." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
-  <link rel="stylesheet" href="../../css/test.css" />
+  <link rel="stylesheet" href="../../css/nm.css" />
   <meta property="og:site_name" content="ReflexLab" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Number Memory Test — ReflexLab" />
-  <meta property="og:description" content="How many digits can you remember? Test your number memory and compare with average humans. Free, no signup." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Number Memory Test — Free Online Digit Memory Game" />
+  <meta property="og:description" content="Watch the number, memorize it, type it back exactly. How many digits can you hold?" />
   <meta property="og:url" content="https://reflexlab.tobiascent.workers.dev/tests/number-memory/number-memory.html" />
   <meta name="twitter:card" content="summary" />
 </head>
 <body>
-  <main class="container">
-    <div class="game-wrap">
-      <div class="crumb"><a href="../../index.html">ReflexLab</a> &gt; Number Memory</div>
+  <main class="container nm-page">
 
-      <div class="result-card">
-        <div class="title">Number Memory</div>
-        <div class="big" id="bigScore">—</div>
-        <div class="unit">digits</div>
-        <div class="pct" id="pctText">Play to see your ranking</div>
-        <div><span class="best-chip" id="bestChip">No record yet</span></div>
-        <div class="card-actions">
-          <button class="btn btn-primary" id="btnPlay">Play</button>
-          <button class="btn btn-ghost" id="btnShare">Share</button>
+    <!-- Top bar -->
+    <div class="nm-topbar">
+      <div class="nm-crumb"><a href="../../index.html">ReflexLab</a> <span>›</span> Number Memory</div>
+      <div class="nm-quick">
+        <button id="nmSound" class="nm-qbtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+        <button id="nmTheme" class="nm-qbtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+        <button id="nmFull" class="nm-qbtn" title="Fullscreen" aria-label="Toggle fullscreen">⛶</button>
+        <button id="nmSettingsBtn" class="nm-qbtn" title="Settings" aria-label="Open settings">⚙</button>
+      </div>
+    </div>
+
+    <!-- Game shell -->
+    <section class="nm-shell">
+
+      <div class="nm-controls">
+        <div class="nm-modes" role="group" aria-label="Game mode">
+          <button class="nm-mode active" data-mode="classic">Classic</button>
+          <button class="nm-mode" data-mode="lives">3 Lives</button>
+          <button class="nm-mode" data-mode="reverse">Reverse</button>
+          <button class="nm-mode" data-mode="practice">Practice</button>
         </div>
       </div>
 
-      <div id="gameBox" class="game-box seq"></div>
-      <div class="input-row">
-        <input id="numInput" class="type-input" type="text" inputmode="numeric" placeholder="Type the number..." autocomplete="off" disabled />
-      </div>
-      <div id="roundInfo" class="score-label"></div>
-
-      <div class="stats-card">
-        <h2>Number Memory Statistics</h2>
-        <div id="compareBox" class="compare-box"></div>
-        <div class="hist-title">YOUR PROGRESS (last 5 sessions)</div>
-        <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
+      <div class="nm-hud">
+        <span id="nmLevel">Level 1 · 3 digits</span>
+        <span id="nmState" class="nm-state">Ready</span>
+        <span id="nmLives"></span>
       </div>
 
-      <p class="msg" id="msg"></p>
+      <div class="nm-stage">
+        <div class="nm-number hidden" id="nmNumber" aria-live="polite"></div>
+        <div class="nm-recall hidden" id="nmRecall">
+          <input type="text" id="nmInput" class="nm-input" inputmode="numeric" autocomplete="off"
+                 placeholder="Type the number…" aria-label="Type the number you memorized" />
+          <div class="nm-keypad" id="nmKeypad" aria-label="On-screen number keypad"></div>
+          <button id="nmSubmit" class="btn btn-primary nm-submit">Submit</button>
+        </div>
+        <div class="nm-reveal hidden" id="nmReveal"></div>
+      </div>
+
+      <div class="nm-actions">
+        <button id="nmStart" class="btn btn-primary">Start</button>
+        <button id="nmHide" class="btn btn-ghost hidden">I'm ready — hide it</button>
+        <button id="nmAgain" class="btn hidden">Try Again</button>
+        <button id="nmShare" class="btn btn-ghost hidden">Share Result</button>
+      </div>
+
+      <div id="nmSummary" class="nm-summary hidden"></div>
+    </section>
+
+    <!-- Secondary features (tabs) -->
+    <section class="nm-tabs">
+      <nav class="nm-tabnav" role="tablist">
+        <button class="nm-tabbtn active" data-tab="stats">Stats</button>
+        <button class="nm-tabbtn" data-tab="history">History</button>
+        <button class="nm-tabbtn" data-tab="ach">Achievements</button>
+        <button class="nm-tabbtn" data-tab="daily">Daily</button>
+        <button class="nm-tabbtn" data-tab="howto">How to Play</button>
+      </nav>
+
+      <div class="nm-tab" id="tab-stats">
+        <div class="nm-profile" id="nmProfile"></div>
+        <div class="nm-statsgrid" id="nmStatsGrid"></div>
+        <h3 class="nm-h3">Best digits over time</h3>
+        <div class="nm-graph" id="nmGraph"></div>
+      </div>
+
+      <div class="nm-tab hidden" id="tab-history">
+        <h3 class="nm-h3">Recent games</h3>
+        <div class="nm-histlist" id="nmHistList"></div>
+      </div>
+
+      <div class="nm-tab hidden" id="tab-ach">
+        <div class="nm-achgrid" id="nmAchGrid"></div>
+      </div>
+
+      <div class="nm-tab hidden" id="tab-daily">
+        <div class="nm-daily" id="nmDaily"></div>
+      </div>
+
+      <div class="nm-tab hidden" id="tab-howto">
+        <h3 class="nm-h3">How to play</h3>
+        <ol class="nm-ol">
+          <li>Press <strong>Start</strong> — a number appears.</li>
+          <li>Memorize it exactly (including any leading zeros).</li>
+          <li>When it disappears, type the exact digits and press <strong>Submit</strong> (or Enter).</li>
+          <li>Correct → the next number gets one more digit.</li>
+          <li>Wrong → you see a position-by-position comparison (Classic: game over).</li>
+        </ol>
+        <h3 class="nm-h3">How this differs from the other memory games</h3>
+        <ul class="nm-ul">
+          <li><strong>Number Memory</strong> — remember an exact digit sequence and reproduce it precisely.</li>
+          <li><strong>Sequence Memory</strong> — remember the order of flashing tiles.</li>
+          <li><strong>Visual Memory</strong> — remember a simultaneous spatial pattern.</li>
+          <li>Digit-span tasks are common memory exercises — this game is casual practice, not a clinical or IQ assessment.</li>
+        </ul>
+        <h3 class="nm-h3">Memory tips</h3>
+        <ul class="nm-ul">
+          <li>Group digits into chunks of 2–3 (like phone numbers).</li>
+          <li>Repeat the sequence mentally as a rhythm.</li>
+          <li>Turn groups into meaningful numbers (years, ages, dates).</li>
+          <li>Enable "Group digits" in Settings to see chunking in action.</li>
+        </ul>
+        <h3 class="nm-h3">Learn more</h3>
+        <ul class="nm-ul">
+          <li><a href="../../content/train-memory.html">How to train your memory</a></li>
+          <li><a href="../../content/do-reflex-games-work.html">Do brain &amp; reflex games actually work?</a></li>
+        </ul>
+        <p class="nm-note">Performance categories are game labels — not medical, IQ, or clinical diagnoses.</p>
+      </div>
+    </section>
+
+    <!-- Settings modal -->
+    <div id="nmSettings" class="nm-modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+      <div class="nm-modal-box">
+        <div class="nm-modal-head">
+          <h3>Settings</h3>
+          <button id="nmSettingsClose" class="nm-qbtn" aria-label="Close settings">✕</button>
+        </div>
+        <div class="nm-modal-body" id="nmSettingsBody"></div>
+      </div>
     </div>
+
+    <!-- First-visit hint -->
+    <div id="nmOnboard" class="nm-onboard hidden">
+      <div class="nm-onboard-box">
+        <strong>Welcome!</strong>
+        <p>Watch the number, memorize it, then type it back exactly when it hides. Each level adds one digit.</p>
+        <button id="nmOnboardOk" class="btn btn-primary">Got it</button>
+      </div>
+    </div>
+
   </main>
+
   <script src="../../js/utils.js"></script>
-  <script src="number-memory.js"></script>
+  <script src="../../js/nm-data.js"></script>
+  <script src="../../js/nm.js"></script>
 </body>
 </html>

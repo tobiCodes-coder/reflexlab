@@ -3,49 +3,153 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Click Speed Test — ReflexLab</title>
-  <meta name="description" content="Test your click speed (CPS) in 5 seconds. Compare with average clickers and pro gamers. Free, no signup." />
+  <title>Click Speed Test (CPS) — Free Online Clicks Per Second Test</title>
+  <meta name="description" content="Test your clicks per second (CPS) in 1, 3, 5, 10, 15 or 30 seconds. Statistics, achievements, daily challenges — free, no signup, runs in your browser." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
-  <link rel="stylesheet" href="../../css/test.css" />
+  <link rel="stylesheet" href="../../css/cps.css" />
   <meta property="og:site_name" content="ReflexLab" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Click Speed Test — ReflexLab" />
-  <meta property="og:description" content="Test your click speed (CPS) in 5 seconds. Compare with average clickers and pro gamers. Free, no signup." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Click Speed Test (CPS) — Free Online Clicks Per Second Test" />
+  <meta property="og:description" content="How fast can you click? Measure your CPS with stats, achievements and daily challenges." />
   <meta property="og:url" content="https://reflexlab.tobiascent.workers.dev/tests/cps/cps.html" />
   <meta name="twitter:card" content="summary" />
 </head>
 <body>
-  <main class="container">
-    <div class="game-wrap">
-      <div class="crumb"><a href="../../index.html">ReflexLab</a> &gt; Click Speed</div>
+  <main class="container cp-page">
 
-      <div class="result-card">
-        <div class="title">Click Speed</div>
-        <div class="big" id="bigScore">—</div>
-        <div class="unit">CPS</div>
-        <div class="pct" id="pctText">Play to see your ranking</div>
-        <div><span class="best-chip" id="bestChip">No record yet</span></div>
-        <div class="card-actions">
-          <button class="btn btn-primary" id="btnPlay">Play</button>
-          <button class="btn btn-ghost" id="btnShare">Share</button>
+    <!-- Top bar -->
+    <div class="cp-topbar">
+      <div class="cp-crumb"><a href="../../index.html">ReflexLab</a> <span>›</span> Click Speed</div>
+      <div class="cp-quick">
+        <button id="cpSound" class="cp-qbtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+        <button id="cpTheme" class="cp-qbtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+        <button id="cpFull" class="cp-qbtn" title="Fullscreen" aria-label="Toggle fullscreen">⛶</button>
+        <button id="cpSettingsBtn" class="cp-qbtn" title="Settings" aria-label="Open settings">⚙</button>
+      </div>
+    </div>
+
+    <!-- Game shell -->
+    <section class="cp-shell">
+
+      <div class="cp-controls">
+        <div class="cp-durs" role="group" aria-label="Test duration">
+          <button class="cp-dur" data-dur="1">1s</button>
+          <button class="cp-dur" data-dur="3">3s</button>
+          <button class="cp-dur active" data-dur="5">5s</button>
+          <button class="cp-dur" data-dur="10">10s</button>
+          <button class="cp-dur" data-dur="15">15s</button>
+          <button class="cp-dur" data-dur="30">30s</button>
+          <button class="cp-dur" data-dur="custom">Custom</button>
+        </div>
+        <div class="cp-modes" role="group" aria-label="Game mode">
+          <button class="cp-mode active" data-mode="classic">Classic</button>
+          <button class="cp-mode" data-mode="endless">Endless</button>
         </div>
       </div>
 
-      <div id="gameBox" class="game-box">Click Play, then click here as fast as you can (5 seconds)</div>
-      <div id="roundInfo" class="score-label"></div>
-
-      <div class="stats-card">
-        <h2>Click Speed Statistics</h2>
-        <div id="compareBox" class="compare-box"></div>
-        <div class="hist-title">YOUR PROGRESS (last 5 sessions)</div>
-        <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
+      <div class="cp-hud">
+        <span id="cpTime">0.0s</span>
+        <span id="cpState" class="cp-state">Ready</span>
+        <span id="cpLive">0 clicks · 0.0 CPS</span>
       </div>
 
-      <p class="msg" id="msg"></p>
+      <div id="cpArea" class="cp-area st-idle" tabindex="0" role="button"
+           aria-label="Click area. Click or tap as fast as possible while the test is running.">
+        <div class="cp-inner">
+          <div class="cp-big" id="cpBig" aria-live="polite">Click Speed Test</div>
+          <div class="cp-sub" id="cpSub">Choose a duration and press Start</div>
+          <div class="cp-ms" id="cpMs"></div>
+        </div>
+      </div>
+
+      <div class="cp-actions">
+        <button id="cpStart" class="btn btn-primary">Start</button>
+        <button id="cpAgain" class="btn hidden">Try Again</button>
+        <button id="cpShare" class="btn btn-ghost hidden">Share Result</button>
+      </div>
+
+      <div id="cpSummary" class="cp-summary hidden"></div>
+    </section>
+
+    <!-- Secondary features (tabs) -->
+    <section class="cp-tabs">
+      <nav class="cp-tabnav" role="tablist">
+        <button class="cp-tabbtn active" data-tab="stats">Stats</button>
+        <button class="cp-tabbtn" data-tab="history">History</button>
+        <button class="cp-tabbtn" data-tab="ach">Achievements</button>
+        <button class="cp-tabbtn" data-tab="daily">Daily</button>
+        <button class="cp-tabbtn" data-tab="howto">How to Play</button>
+      </nav>
+
+      <div class="cp-tab" id="tab-stats">
+        <div class="cp-profile" id="cpProfile"></div>
+        <div class="cp-statsgrid" id="cpStatsGrid"></div>
+        <h3 class="cp-h3">Last 20 tests (CPS)</h3>
+        <div class="cp-graph" id="cpGraph"></div>
+      </div>
+
+      <div class="cp-tab hidden" id="tab-history">
+        <h3 class="cp-h3">Recent tests</h3>
+        <div class="cp-histlist" id="cpHistList"></div>
+      </div>
+
+      <div class="cp-tab hidden" id="tab-ach">
+        <div class="cp-achgrid" id="cpAchGrid"></div>
+      </div>
+
+      <div class="cp-tab hidden" id="tab-daily">
+        <div class="cp-daily" id="cpDaily"></div>
+      </div>
+
+      <div class="cp-tab hidden" id="tab-howto">
+        <h3 class="cp-h3">How to play</h3>
+        <ol class="cp-ol">
+          <li>Choose a duration (1–30 seconds or custom).</li>
+          <li>Press <strong>Start</strong> — the timer begins on your first click.</li>
+          <li>Click / tap / press your key as fast as you can until time runs out.</li>
+          <li>See your <strong>CPS</strong> (Clicks Per Second), total clicks and category.</li>
+        </ol>
+        <h3 class="cp-h3">Tips for a better score</h3>
+        <ul class="cp-ul">
+          <li>Rest your finger on the button before starting.</li>
+          <li>Try different techniques: regular, jitter or butterfly clicking.</li>
+          <li>Short bursts (1–5s) give higher CPS; long tests measure endurance.</li>
+          <li>Keep your hand relaxed — tension slows you down.</li>
+        </ul>
+        <h3 class="cp-h3">Learn more</h3>
+        <ul class="cp-ul">
+          <li><a href="../../content/good-cps-score.html">What is a good CPS score?</a></li>
+          <li><a href="../../content/do-reflex-games-work.html">Do brain &amp; reflex games actually work?</a></li>
+        </ul>
+        <p class="cp-note">Performance categories are general game labels — not scientific or universal rankings.</p>
+      </div>
+    </section>
+
+    <!-- Settings modal -->
+    <div id="cpSettings" class="cp-modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+      <div class="cp-modal-box">
+        <div class="cp-modal-head">
+          <h3>Settings</h3>
+          <button id="cpSettingsClose" class="cp-qbtn" aria-label="Close settings">✕</button>
+        </div>
+        <div class="cp-modal-body" id="cpSettingsBody"></div>
+      </div>
     </div>
+
+    <!-- First-visit hint -->
+    <div id="cpOnboard" class="cp-onboard hidden">
+      <div class="cp-onboard-box">
+        <strong>Welcome!</strong>
+        <p>Pick a duration, press Start, then click the big area as fast as you can. The timer starts on your first click.</p>
+        <button id="cpOnboardOk" class="btn btn-primary">Got it</button>
+      </div>
+    </div>
+
   </main>
+
   <script src="../../js/utils.js"></script>
-  <script src="cps.js"></script>
+  <script src="../../js/cps-data.js"></script>
+  <script src="../../js/cps.js"></script>
 </body>
 </html>

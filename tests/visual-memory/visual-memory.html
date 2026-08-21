@@ -3,49 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visual Memory Test — ReflexLab</title>
-  <meta name="description" content="Recall the pattern on 12 boxes before it fades. Test your visual memory and compare with others. Free, no signup." />
+  <title>Visual Memory Test — Free Online Pattern Recall Game</title>
+  <meta name="description" content="Tiles flash simultaneously — remember the pattern and recreate it. Order doesn't matter. Classic, timed, no-mistake and shape modes with stats and daily challenges." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
-  <link rel="stylesheet" href="../../css/test.css" />
+  <link rel="stylesheet" href="../../css/vm.css" />
   <meta property="og:site_name" content="ReflexLab" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Visual Memory Test — ReflexLab" />
-  <meta property="og:description" content="Recall the pattern on 12 boxes before it fades. Test your visual memory and compare with others. Free, no signup." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Visual Memory Test — Free Online Pattern Recall Game" />
+  <meta property="og:description" content="Watch the pattern, remember the positions, recreate it. Order doesn't matter — pure spatial memory." />
   <meta property="og:url" content="https://reflexlab.tobiascent.workers.dev/tests/visual-memory/visual-memory.html" />
   <meta name="twitter:card" content="summary" />
 </head>
 <body>
-  <main class="container">
-    <div class="game-wrap">
-      <div class="crumb"><a href="../../index.html">ReflexLab</a> &gt; Visual Memory</div>
+  <main class="container vm-page">
 
-      <div class="result-card">
-        <div class="title">Visual Memory</div>
-        <div class="big" id="bigScore">—</div>
-        <div class="unit">levels</div>
-        <div class="pct" id="pctText">Play to see your ranking</div>
-        <div><span class="best-chip" id="bestChip">No record yet</span></div>
-        <div class="card-actions">
-          <button class="btn btn-primary" id="btnPlay">Play</button>
-          <button class="btn btn-ghost" id="btnShare">Share</button>
+    <!-- Top bar -->
+    <div class="vm-topbar">
+      <div class="vm-crumb"><a href="../../index.html">ReflexLab</a> <span>›</span> Visual Memory</div>
+      <div class="vm-quick">
+        <button id="vmSound" class="vm-qbtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+        <button id="vmTheme" class="vm-qbtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+        <button id="vmFull" class="vm-qbtn" title="Fullscreen" aria-label="Toggle fullscreen">⛶</button>
+        <button id="vmSettingsBtn" class="vm-qbtn" title="Settings" aria-label="Open settings">⚙</button>
+      </div>
+    </div>
+
+    <!-- Game shell -->
+    <section class="vm-shell">
+
+      <div class="vm-controls">
+        <div class="vm-modes" role="group" aria-label="Game mode">
+          <button class="vm-mode active" data-mode="classic">Classic</button>
+          <button class="vm-mode" data-mode="timed">Timed</button>
+          <button class="vm-mode" data-mode="nomistake">No-Mistake</button>
+          <button class="vm-mode" data-mode="shape">Shape</button>
+        </div>
+        <div class="vm-diffs" role="group" aria-label="Difficulty">
+          <button class="vm-diff" data-diff="easy">Easy</button>
+          <button class="vm-diff active" data-diff="normal">Normal</button>
+          <button class="vm-diff" data-diff="hard">Hard</button>
+          <button class="vm-diff" data-diff="expert">Expert</button>
         </div>
       </div>
 
-      <div id="grid" class="mem-grid" style="grid-template-columns: repeat(4, 1fr); max-width: 440px; margin: 0 auto;"></div>
-      <div id="roundInfo" class="score-label"></div>
-
-      <div class="stats-card">
-        <h2>Visual Memory Statistics</h2>
-        <div id="compareBox" class="compare-box"></div>
-        <div class="hist-title">YOUR PROGRESS (last 5 sessions)</div>
-        <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
+      <div class="vm-hud">
+        <span id="vmLevel">Level 1 · 3 targets · 3×3</span>
+        <span id="vmState" class="vm-state">Ready</span>
+        <span id="vmLives">Lives ●●●</span>
+        <span id="vmProg">0 / 3 selected</span>
       </div>
 
-      <p class="msg" id="msg"></p>
+      <div class="vm-grid-wrap">
+        <div class="vm-grid" id="vmGrid" aria-label="Pattern grid. Watch the flashing tiles, then select the same tiles. Order does not matter."></div>
+        <div class="vm-timerbar hidden" id="vmTimerBar"><div id="vmTimerFill"></div></div>
+      </div>
+
+      <div class="vm-actions">
+        <button id="vmStart" class="btn btn-primary">Start</button>
+        <button id="vmAgain" class="btn hidden">Try Again</button>
+        <button id="vmShare" class="btn btn-ghost hidden">Share Result</button>
+      </div>
+
+      <div id="vmSummary" class="vm-summary hidden"></div>
+    </section>
+
+    <!-- Secondary features (tabs) -->
+    <section class="vm-tabs">
+      <nav class="vm-tabnav" role="tablist">
+        <button class="vm-tabbtn active" data-tab="stats">Stats</button>
+        <button class="vm-tabbtn" data-tab="history">History</button>
+        <button class="vm-tabbtn" data-tab="ach">Achievements</button>
+        <button class="vm-tabbtn" data-tab="daily">Daily</button>
+        <button class="vm-tabbtn" data-tab="howto">How to Play</button>
+      </nav>
+
+      <div class="vm-tab" id="tab-stats">
+        <div class="vm-profile" id="vmProfile"></div>
+        <div class="vm-statsgrid" id="vmStatsGrid"></div>
+        <h3 class="vm-h3">Best level over time</h3>
+        <div class="vm-graph" id="vmGraph"></div>
+      </div>
+
+      <div class="vm-tab hidden" id="tab-history">
+        <h3 class="vm-h3">Recent games</h3>
+        <div class="vm-histlist" id="vmHistList"></div>
+      </div>
+
+      <div class="vm-tab hidden" id="tab-ach">
+        <div class="vm-achgrid" id="vmAchGrid"></div>
+      </div>
+
+      <div class="vm-tab hidden" id="tab-daily">
+        <div class="vm-daily" id="vmDaily"></div>
+      </div>
+
+      <div class="vm-tab hidden" id="tab-howto">
+        <h3 class="vm-h3">How to play</h3>
+        <ol class="vm-ol">
+          <li>Press <strong>Start</strong> — several tiles light up <strong>at the same time</strong>.</li>
+          <li>Memorize <em>where</em> they were. Order does NOT matter.</li>
+          <li>When the pattern hides, tap all the tiles you remember.</li>
+          <li>Wrong taps cost a life (Classic: 3 lives). Missed tiles are revealed at round end.</li>
+          <li>Each level adds more targets; the grid grows at milestones.</li>
+        </ol>
+        <h3 class="vm-h3">Visual vs Sequence memory</h3>
+        <ul class="vm-ul">
+          <li><strong>Sequence Memory</strong> tests order — which tile came first, second, third.</li>
+          <li><strong>Visual Memory</strong> tests spatial layout — where the tiles were, in any order.</li>
+          <li>This game is a practice experience, not a clinical or diagnostic measurement.</li>
+        </ul>
+        <h3 class="vm-h3">Strategy tips</h3>
+        <ul class="vm-ul">
+          <li>See the pattern as one shape, not separate tiles.</li>
+          <li>Use corners and edges as anchors.</li>
+          <li>Group nearby tiles into clusters.</li>
+          <li>Scan the grid systematically before selecting.</li>
+          <li>Don't guess randomly — wrong taps cost lives.</li>
+        </ul>
+        <h3 class="vm-h3">Learn more</h3>
+        <ul class="vm-ul">
+          <li><a href="../../content/train-memory.html">How to train your memory</a></li>
+          <li><a href="../../content/do-reflex-games-work.html">Do brain &amp; reflex games actually work?</a></li>
+        </ul>
+        <p class="vm-note">Performance categories are game labels — not clinical or scientific assessments.</p>
+      </div>
+    </section>
+
+    <!-- Settings modal -->
+    <div id="vmSettings" class="vm-modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+      <div class="vm-modal-box">
+        <div class="vm-modal-head">
+          <h3>Settings</h3>
+          <button id="vmSettingsClose" class="vm-qbtn" aria-label="Close settings">✕</button>
+        </div>
+        <div class="vm-modal-body" id="vmSettingsBody"></div>
+      </div>
     </div>
+
+    <!-- First-visit hint -->
+    <div id="vmOnboard" class="vm-onboard hidden">
+      <div class="vm-onboard-box">
+        <strong>Welcome!</strong>
+        <p>Several tiles flash at once. Remember their positions — order doesn't matter — then tap them all. 3 lives per run.</p>
+        <button id="vmOnboardOk" class="btn btn-primary">Got it</button>
+      </div>
+    </div>
+
   </main>
+
   <script src="../../js/utils.js"></script>
-  <script src="visual-memory.js"></script>
+  <script src="../../js/vm-data.js"></script>
+  <script src="../../js/vm.js"></script>
 </body>
 </html>

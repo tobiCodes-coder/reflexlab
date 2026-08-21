@@ -11,6 +11,5 @@ var TESTS = [
   { id: 'sequence-memory', title: 'Sequence Memory', desc: 'Remember the growing number sequence.',             unit: 'lvl',   live: true },
   { id: 'visual-memory',   title: 'Visual Memory',   desc: 'Recall the pattern from memory.',                   unit: 'lvl',   live: true },
   { id: 'number-memory',   title: 'Number Memory',   desc: 'How many digits can you hold in mind?',             unit: 'digits', live: true },
-  { id: 'color-vision',    title: 'Color Vision',    desc: 'Spot the odd color out.',                           unit: 'lvl',   live: true },
-  { id: 'verbal-memory',   title: 'Verbal Memory',   desc: 'Have you seen this word before?',                   unit: 'words', live: true }
+  { id: 'color-vision',    title: 'Color Vision',    desc: 'Spot the odd color out.',                           unit: 'lvl',   live: true }
 ];

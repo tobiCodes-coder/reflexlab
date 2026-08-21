@@ -3,49 +3,162 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Typing Speed Test — ReflexLab</title>
-  <meta name="description" content="Test your typing speed in WPM with live accuracy highlighting. Compare with average and professional typists. Free, no signup." />
+  <title>Typing Speed Test (WPM) — Free Online Typing Test</title>
+  <meta name="description" content="Test your typing speed in WPM with accuracy tracking, multiple categories, statistics, achievements and daily challenges — free, no signup, in your browser." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
-  <link rel="stylesheet" href="../../css/test.css" />
+  <link rel="stylesheet" href="../../css/typing.css" />
   <meta property="og:site_name" content="ReflexLab" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Typing Speed Test — ReflexLab" />
-  <meta property="og:description" content="Test your typing speed in WPM with live accuracy highlighting. Compare with average and professional typists. Free, no signup." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Typing Speed Test (WPM) — Free Online Typing Test" />
+  <meta property="og:description" content="Type the passage, watch live WPM and accuracy, and track your progress over time." />
   <meta property="og:url" content="https://reflexlab.tobiascent.workers.dev/tests/typing/typing.html" />
   <meta name="twitter:card" content="summary" />
 </head>
 <body>
-  <main class="container">
-    <div class="game-wrap">
-      <div class="crumb"><a href="../../index.html">ReflexLab</a> &gt; Typing Speed</div>
+  <main class="container tp-page">
 
-      <div class="result-card">
-        <div class="title">Typing Speed</div>
-        <div class="big" id="bigScore">—</div>
-        <div class="unit">WPM</div>
-        <div class="pct" id="pctText">Play to see your ranking</div>
-        <div><span class="best-chip" id="bestChip">No record yet</span></div>
-        <div class="card-actions">
-          <button class="btn btn-primary" id="btnPlay">New text</button>
-          <button class="btn btn-ghost" id="btnShare">Share</button>
+    <!-- Top bar -->
+    <div class="tp-topbar">
+      <div class="tp-crumb"><a href="../../index.html">ReflexLab</a> <span>›</span> Typing Speed</div>
+      <div class="tp-quick">
+        <button id="tpSound" class="tp-qbtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+        <button id="tpTheme" class="tp-qbtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+        <button id="tpFull" class="tp-qbtn" title="Fullscreen" aria-label="Toggle fullscreen">⛶</button>
+        <button id="tpSettingsBtn" class="tp-qbtn" title="Settings" aria-label="Open settings">⚙</button>
+      </div>
+    </div>
+
+    <!-- Game shell -->
+    <section class="tp-shell">
+
+      <div class="tp-controls">
+        <div class="tp-durs" role="group" aria-label="Test type">
+          <button class="tp-dur" data-dur="15">15s</button>
+          <button class="tp-dur active" data-dur="30">30s</button>
+          <button class="tp-dur" data-dur="60">60s</button>
+          <button class="tp-dur" data-dur="120">120s</button>
+          <button class="tp-dur" data-dur="w25">25 words</button>
+          <button class="tp-dur" data-dur="w50">50 words</button>
+        </div>
+        <div class="tp-cats" role="group" aria-label="Text category">
+          <button class="tp-cat active" data-cat="general">General</button>
+          <button class="tp-cat" data-cat="quotes">Quotes</button>
+          <button class="tp-cat" data-cat="code">Code</button>
+          <button class="tp-cat" data-cat="numbers">Numbers</button>
+          <button class="tp-cat" data-cat="hard">Hard</button>
         </div>
       </div>
 
-      <div id="target" class="type-target"></div>
-      <input id="typeInput" class="type-input" type="text" placeholder="Start typing to begin..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-
-      <div class="stats-card">
-        <h2>Typing Speed Statistics</h2>
-        <div id="compareBox" class="compare-box"></div>
-        <div class="hist-title">YOUR PROGRESS (last 5 sessions)</div>
-        <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
+      <div class="tp-hud">
+        <span id="tpTime">0:30</span>
+        <span id="tpState" class="tp-state">Ready</span>
+        <span id="tpLive">0 WPM · 100%</span>
       </div>
 
-      <p class="msg" id="msg"></p>
+      <div class="tp-passage-wrap">
+        <div class="tp-passage" id="tpPassage" aria-label="Text to type"></div>
+        <input type="text" id="tpInput" class="tp-input" autocomplete="off" autocapitalize="off"
+               autocorrect="off" spellcheck="false"
+               aria-label="Typing input. Type the passage shown above." />
+        <div class="tp-hint" id="tpHint">Click here and start typing — the timer begins on your first keypress.</div>
+      </div>
+
+      <div class="tp-actions">
+        <button id="tpNew" class="btn btn-primary">New Text</button>
+        <button id="tpRestart" class="btn btn-ghost">Restart</button>
+        <button id="tpShare" class="btn btn-ghost hidden">Share Result</button>
+      </div>
+
+      <div id="tpSummary" class="tp-summary hidden"></div>
+    </section>
+
+    <!-- Secondary features (tabs) -->
+    <section class="tp-tabs">
+      <nav class="tp-tabnav" role="tablist">
+        <button class="tp-tabbtn active" data-tab="stats">Stats</button>
+        <button class="tp-tabbtn" data-tab="history">History</button>
+        <button class="tp-tabbtn" data-tab="ach">Achievements</button>
+        <button class="tp-tabbtn" data-tab="daily">Daily</button>
+        <button class="tp-tabbtn" data-tab="howto">How to Play</button>
+      </nav>
+
+      <div class="tp-tab" id="tab-stats">
+        <div class="tp-profile" id="tpProfile"></div>
+        <div class="tp-statsgrid" id="tpStatsGrid"></div>
+        <h3 class="tp-h3">Last 20 tests (WPM)</h3>
+        <div class="tp-graph" id="tpGraph"></div>
+      </div>
+
+      <div class="tp-tab hidden" id="tab-history">
+        <h3 class="tp-h3">Recent tests</h3>
+        <div class="tp-histlist" id="tpHistList"></div>
+      </div>
+
+      <div class="tp-tab hidden" id="tab-ach">
+        <div class="tp-achgrid" id="tpAchGrid"></div>
+      </div>
+
+      <div class="tp-tab hidden" id="tab-daily">
+        <div class="tp-daily" id="tpDaily"></div>
+      </div>
+
+      <div class="tp-tab hidden" id="tab-howto">
+        <h3 class="tp-h3">How to play</h3>
+        <ol class="tp-ol">
+          <li>Choose a test type (time or word count) and a text category.</li>
+          <li>Click the input box and start typing the passage.</li>
+          <li>The timer starts on your <strong>first keypress</strong>.</li>
+          <li>Correct characters turn green-ish, mistakes turn red. Backspace fixes mistakes.</li>
+          <li>Finish the text or let the timer run out to see your result.</li>
+        </ol>
+        <h3 class="tp-h3">How the score is calculated</h3>
+        <ul class="tp-ul">
+          <li><strong>WPM</strong> = (correct characters ÷ 5) ÷ minutes elapsed. One "word" = 5 characters.</li>
+          <li><strong>CPM</strong> = correct characters ÷ minutes elapsed.</li>
+          <li><strong>Accuracy</strong> = (keystrokes − errors) ÷ keystrokes × 100.</li>
+          <li><strong>Consistency</strong> = how steady your per-second speed was (not the same as accuracy).</li>
+          <li>Corrected mistakes still count in the error total — fixing them only improves accuracy slightly.</li>
+        </ul>
+        <h3 class="tp-h3">Tips</h3>
+        <ul class="tp-ul">
+          <li>Accuracy first, speed second — speed follows clean typing.</li>
+          <li>Keep your eyes on the passage, not the keyboard.</li>
+          <li>Short daily practice beats occasional long sessions.</li>
+        </ul>
+        <h3 class="tp-h3">Learn more</h3>
+        <ul class="tp-ul">
+          <li><a href="../../content/improve-typing-speed.html">What is a good typing speed?</a></li>
+          <li><a href="../../content/do-reflex-games-work.html">Do brain &amp; reflex games actually work?</a></li>
+        </ul>
+        <p class="tp-note">Performance categories are general game labels — not universal scientific classifications.</p>
+      </div>
+    </section>
+
+    <!-- Settings modal -->
+    <div id="tpSettings" class="tp-modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+      <div class="tp-modal-box">
+        <div class="tp-modal-head">
+          <h3>Settings</h3>
+          <button id="tpSettingsClose" class="tp-qbtn" aria-label="Close settings">✕</button>
+        </div>
+        <div class="tp-modal-body" id="tpSettingsBody"></div>
+      </div>
     </div>
+
+    <!-- First-visit hint -->
+    <div id="tpOnboard" class="tp-onboard hidden">
+      <div class="tp-onboard-box">
+        <strong>Welcome!</strong>
+        <p>Click the input box and type the passage. Green = correct, red = mistake. The timer starts on your first keypress.</p>
+        <button id="tpOnboardOk" class="btn btn-primary">Got it</button>
+      </div>
+    </div>
+
   </main>
+
   <script src="../../js/utils.js"></script>
-  <script src="typing.js"></script>
+  <script src="../../js/typing-data.js"></script>
+  <script src="../../js/typing.js"></script>
 </body>
 </html>

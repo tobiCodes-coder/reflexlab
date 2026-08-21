@@ -29,3 +29,32 @@
 }
 .cta h2 { margin-top: 0; }
 .cta p { margin-bottom: var(--space-4); }
+
+/* ---------- LONG-FORM: tables, blockquote, h3 ---------- */
+.article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-5) 0;
+  font-size: var(--text-sm);
+}
+.article th, .article td {
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: left;
+}
+.article th { background: var(--card); color: var(--text); font-weight: 700; }
+.article td { color: var(--text-2); }
+.article blockquote {
+  border-left: 3px solid var(--primary);
+  background: var(--card);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-4) 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-2);
+  font-style: italic;
+}
+.article h3 {
+  font-size: var(--text-lg);
+  margin: var(--space-5) 0 var(--space-2);
+}
+.article ol { margin: var(--space-3) 0 var(--space-4) var(--space-5); color: var(--text-2); line-height: 1.8; }

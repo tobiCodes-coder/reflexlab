@@ -3,49 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sequence Memory Test — ReflexLab</title>
-  <meta name="description" content="Remember the growing sequence on 12 boxes. Test your short-term memory and compare with others. Free, no signup." />
+  <title>Sequence Memory Test — Free Online Memory Game</title>
+  <meta name="description" content="Watch the sequence, remember it, reproduce it. Classic, timed, reverse and pattern modes with statistics, achievements and daily challenges — free, in your browser." />
   <link rel="stylesheet" href="../../css/variables.css" />
   <link rel="stylesheet" href="../../css/global.css" />
-  <link rel="stylesheet" href="../../css/test.css" />
+  <link rel="stylesheet" href="../../css/seq.css" />
   <meta property="og:site_name" content="ReflexLab" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Sequence Memory Test — ReflexLab" />
-  <meta property="og:description" content="Remember the growing sequence on 12 boxes. Test your short-term memory and compare with others. Free, no signup." />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Sequence Memory Test — Free Online Memory Game" />
+  <meta property="og:description" content="Watch → Remember → Reproduce → Level up. How long a sequence can you hold in your head?" />
   <meta property="og:url" content="https://reflexlab.tobiascent.workers.dev/tests/sequence-memory/sequence-memory.html" />
   <meta name="twitter:card" content="summary" />
 </head>
 <body>
-  <main class="container">
-    <div class="game-wrap">
-      <div class="crumb"><a href="../../index.html">ReflexLab</a> &gt; Sequence Memory</div>
+  <main class="container sq-page">
 
-      <div class="result-card">
-        <div class="title">Sequence Memory</div>
-        <div class="big" id="bigScore">—</div>
-        <div class="unit">levels</div>
-        <div class="pct" id="pctText">Play to see your ranking</div>
-        <div><span class="best-chip" id="bestChip">No record yet</span></div>
-        <div class="card-actions">
-          <button class="btn btn-primary" id="btnPlay">Play</button>
-          <button class="btn btn-ghost" id="btnShare">Share</button>
+    <!-- Top bar -->
+    <div class="sq-topbar">
+      <div class="sq-crumb"><a href="../../index.html">ReflexLab</a> <span>›</span> Sequence Memory</div>
+      <div class="sq-quick">
+        <button id="sqSound" class="sq-qbtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+        <button id="sqTheme" class="sq-qbtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+        <button id="sqFull" class="sq-qbtn" title="Fullscreen" aria-label="Toggle fullscreen">⛶</button>
+        <button id="sqSettingsBtn" class="sq-qbtn" title="Settings" aria-label="Open settings">⚙</button>
+      </div>
+    </div>
+
+    <!-- Game shell -->
+    <section class="sq-shell">
+
+      <div class="sq-controls">
+        <div class="sq-modes" role="group" aria-label="Game mode">
+          <button class="sq-mode active" data-mode="classic">Classic</button>
+          <button class="sq-mode" data-mode="timed">Timed</button>
+          <button class="sq-mode" data-mode="reverse">Reverse</button>
+          <button class="sq-mode" data-mode="pattern">Pattern</button>
+        </div>
+        <div class="sq-diffs" role="group" aria-label="Difficulty">
+          <button class="sq-diff" data-diff="easy">Easy</button>
+          <button class="sq-diff active" data-diff="normal">Normal</button>
+          <button class="sq-diff" data-diff="hard">Hard</button>
+          <button class="sq-diff" data-diff="expert">Expert</button>
         </div>
       </div>
 
-      <div id="grid" class="mem-grid" style="grid-template-columns: repeat(4, 1fr); max-width: 440px; margin: 0 auto;"></div>
-      <div id="roundInfo" class="score-label"></div>
-
-      <div class="stats-card">
-        <h2>Sequence Memory Statistics</h2>
-        <div id="compareBox" class="compare-box"></div>
-        <div class="hist-title">YOUR PROGRESS (last 5 sessions)</div>
-        <svg id="progChart" viewBox="0 0 600 140" style="width:100%; height:auto; display:block;"></svg>
+      <div class="sq-hud">
+        <span id="sqLevel">Level 1 · Sequence 2</span>
+        <span id="sqState" class="sq-state">Ready</span>
+        <span id="sqProg">0 / 2</span>
       </div>
 
-      <p class="msg" id="msg"></p>
+      <div class="sq-grid-wrap">
+        <div class="sq-grid" id="sqGrid" aria-label="Memory grid. Watch the sequence, then repeat it."></div>
+        <div class="sq-timerbar hidden" id="sqTimerBar"><div id="sqTimerFill"></div></div>
+      </div>
+
+      <div class="sq-actions">
+        <button id="sqStart" class="btn btn-primary">Start</button>
+        <button id="sqAgain" class="btn hidden">Try Again</button>
+        <button id="sqShare" class="btn btn-ghost hidden">Share Result</button>
+      </div>
+
+      <div id="sqSummary" class="sq-summary hidden"></div>
+    </section>
+
+    <!-- Secondary features (tabs) -->
+    <section class="sq-tabs">
+      <nav class="sq-tabnav" role="tablist">
+        <button class="sq-tabbtn active" data-tab="stats">Stats</button>
+        <button class="sq-tabbtn" data-tab="history">History</button>
+        <button class="sq-tabbtn" data-tab="ach">Achievements</button>
+        <button class="sq-tabbtn" data-tab="daily">Daily</button>
+        <button class="sq-tabbtn" data-tab="howto">How to Play</button>
+      </nav>
+
+      <div class="sq-tab" id="tab-stats">
+        <div class="sq-profile" id="sqProfile"></div>
+        <div class="sq-statsgrid" id="sqStatsGrid"></div>
+        <h3 class="sq-h3">Longest sequence over time</h3>
+        <div class="sq-graph" id="sqGraph"></div>
+      </div>
+
+      <div class="sq-tab hidden" id="tab-history">
+        <h3 class="sq-h3">Recent games</h3>
+        <div class="sq-histlist" id="sqHistList"></div>
+      </div>
+
+      <div class="sq-tab hidden" id="tab-ach">
+        <div class="sq-achgrid" id="sqAchGrid"></div>
+      </div>
+
+      <div class="sq-tab hidden" id="tab-daily">
+        <div class="sq-daily" id="sqDaily"></div>
+      </div>
+
+      <div class="sq-tab hidden" id="tab-howto">
+        <h3 class="sq-h3">How to play</h3>
+        <ol class="sq-ol">
+          <li>Press <strong>Start</strong> — tiles light up in a sequence.</li>
+          <li>Watch carefully. Input is locked during playback.</li>
+          <li>When it's your turn, tap the tiles in the <strong>same order</strong>.</li>
+          <li>Reverse mode: tap them in <strong>reverse order</strong>.</li>
+          <li>Each level adds one more step. One mistake ends the game (Classic).</li>
+        </ol>
+        <h3 class="sq-h3">What it measures</h3>
+        <ul class="sq-ul">
+          <li><strong>Sequence length</strong> — the longest sequence you reproduced correctly.</li>
+          <li><strong>Accuracy</strong> — correct taps ÷ total taps.</li>
+          <li><strong>Recall time</strong> — how fast you reproduced the sequence.</li>
+          <li>This is a working-memory style game — not a clinical or medical assessment.</li>
+        </ul>
+        <h3 class="sq-h3">Memory tips</h3>
+        <ul class="sq-ul">
+          <li>Chunk the sequence into groups (like phone numbers).</li>
+          <li>Say the positions in your head as a rhythm or story.</li>
+          <li>Sleep well — memory consolidation happens during sleep.</li>
+          <li>Practice short sessions daily instead of long rare ones.</li>
+        </ul>
+        <h3 class="sq-h3">Learn more</h3>
+        <ul class="sq-ul">
+          <li><a href="../../content/train-memory.html">How to train your memory</a></li>
+          <li><a href="../../content/do-reflex-games-work.html">Do brain &amp; reflex games actually work?</a></li>
+        </ul>
+        <p class="sq-note">Performance categories are game labels — not medical or scientific assessments.</p>
+      </div>
+    </section>
+
+    <!-- Settings modal -->
+    <div id="sqSettings" class="sq-modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+      <div class="sq-modal-box">
+        <div class="sq-modal-head">
+          <h3>Settings</h3>
+          <button id="sqSettingsClose" class="sq-qbtn" aria-label="Close settings">✕</button>
+        </div>
+        <div class="sq-modal-body" id="sqSettingsBody"></div>
+      </div>
     </div>
+
+    <!-- First-visit hint -->
+    <div id="sqOnboard" class="sq-onboard hidden">
+      <div class="sq-onboard-box">
+        <strong>Welcome!</strong>
+        <p>Watch the tiles light up, then repeat the sequence. Each level gets one step longer. Good luck!</p>
+        <button id="sqOnboardOk" class="btn btn-primary">Got it</button>
+      </div>
+    </div>
+
   </main>
+
   <script src="../../js/utils.js"></script>
-  <script src="sequence-memory.js"></script>
+  <script src="../../js/seq-data.js"></script>
+  <script src="../../js/seq.js"></script>
 </body>
 </html>
