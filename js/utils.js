@@ -186,3 +186,57 @@ window.addEventListener('DOMContentLoaded', function () {
       '<div class="container foot-line">© 2026 ReflexLab · Free browser reflex & memory games — no signup, no downloads · <a href="/index.html">Home</a></div>';
   }, 0);
 });
+
+
+
+
+
+
+
+
+
+/* ---------- PWA: manifest + SW + install button ---------- */
+(function () {
+  function addMeta(name, content) {
+    var m = document.createElement('meta');
+    m.name = name;
+    m.content = content;
+    document.head.appendChild(m);
+  }
+  var l = document.createElement('link');
+  l.rel = 'manifest';
+  l.href = '/manifest.webmanifest';
+  document.head.appendChild(l);
+  addMeta('theme-color', '#0b0f17');
+  addMeta('mobile-web-app-capable', 'yes');
+  addMeta('apple-mobile-web-app-capable', 'yes');
+  addMeta('apple-mobile-web-app-status-bar-style', 'black-translucent');
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    });
+  }
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    try { if (localStorage.getItem('rl-pwa-hide')) return; } catch (err) {}
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:98;display:flex;gap:6px;align-items:center';
+    var b = document.createElement('button');
+    b.textContent = '⬇ Install ReflexLab App';
+    b.style.cssText = 'background:#22d3ee;color:#06202a;border:none;padding:10px 16px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.4)';
+    var x = document.createElement('button');
+    x.textContent = '✕';
+    x.setAttribute('aria-label', 'Dismiss install prompt');
+    x.style.cssText = 'background:rgba(0,0,0,.4);color:#fff;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer';
+    x.onclick = function () {
+      wrap.remove();
+      try { localStorage.setItem('rl-pwa-hide', '1'); } catch (err) {}
+    };
+    b.onclick = function () { e.prompt(); wrap.remove(); };
+    wrap.appendChild(b);
+    wrap.appendChild(x);
+    document.body.appendChild(wrap);
+  });
+})();
