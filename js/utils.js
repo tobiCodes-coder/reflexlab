@@ -183,10 +183,9 @@ window.addEventListener('DOMContentLoaded', function () {
     var f = document.querySelector('footer');
     if (!f) return;
     f.innerHTML =
-      '<div class="container foot-line">© 2026 ReflexLab · Free browser reflex & memory games — no signup, no downloads · <a href="/index.html">Home</a></div>';
+      '<div class="container foot-line">© 2026 ReflexLab · Free reflex & memory games · <a href="/index.html">Home</a> · <a href="/download.html">Android App</a></div>';
   }, 0);
 });
-
 
 
 
