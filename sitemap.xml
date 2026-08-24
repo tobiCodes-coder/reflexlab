@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://reflexlab.tobiascent.workers.dev/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/reaction/reaction.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/cps/cps.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/typing/typing.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/aim/aim.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/sequence-memory/sequence-memory.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/visual-memory/visual-memory.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/number-memory/number-memory.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/color-vision/color-vision.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/content/average-reaction-time.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/content/good-cps-score.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/content/improve-typing-speed.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/content/improve-aim-fps.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/content/train-memory.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://reflexlab.tobiascent.workers.dev/content/do-reflex-games-work.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/reaction/reaction</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/cps/cps</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/typing/typing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/aim/aim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/sequence-memory/sequence-memory</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/visual-memory/visual-memory</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/number-memory/number-memory</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/tests/color-vision/color-vision</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/average-reaction-time</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/good-cps-score</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/improve-typing-speed</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/improve-aim-fps</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/train-memory</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://reflexlab.tobiascent.workers.dev/content/do-reflex-games-work</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>
