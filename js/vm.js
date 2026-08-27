@@ -255,6 +255,7 @@
       'Personal Best: ' + (VMD.data.pb || level) + ' (' + r.cat + ')\n' +
       'Try it: https://reflexlab.tobiascent.workers.dev/tests/visual-memory/visual-memory.html';
 
+    submitScore("visual-memory", level);
     renderAll();
   }
 

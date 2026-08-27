@@ -197,6 +197,7 @@
       'Personal Best: ' + (NMD.data.pb || longest) + ' digits (' + r.cat + ')\n' +
       'Try it: https://reflexlab.tobiascent.workers.dev/tests/number-memory/number-memory.html';
 
+    submitScore("number-memory", longest);
     renderAll();
   }
 

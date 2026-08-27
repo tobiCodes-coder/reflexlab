@@ -1,5 +1,12 @@
 name = "reflexlab"
 compatibility_date = "2026-08-18"
+main = "worker.js"
+root = "."
 
 [assets]
 directory = "./"
+binding = "ASSETS"
+
+[[kv_namespaces]]
+binding = "STATS"
+id = "c4fd5ee523ba497ca5565654fc3ef793"

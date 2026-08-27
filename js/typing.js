@@ -139,6 +139,7 @@
       'Personal Best: ' + (TPD.data.pb || '—') + ' WPM\n' +
       'Try it: https://reflexlab.tobiascent.workers.dev/tests/typing/typing.html';
 
+    submitScore("typing", wpm);
     renderAll();
   }
 

@@ -361,6 +361,7 @@
       'PB (' + mode + '): ' + (AMD.data.pb[mode] || score) + '\n' +
       'Try it: https://reflexlab.tobiascent.workers.dev/tests/aim/aim.html';
 
+    submitScore("aim", score);
     renderAll();
   }
 

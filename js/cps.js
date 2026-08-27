@@ -172,6 +172,7 @@
       'Personal Best: ' + (CPSD.data.pb || '—') + ' CPS\n' +
       'Try it: https://reflexlab.tobiascent.workers.dev/tests/cps/cps.html';
 
+    submitScore("cps", cps);
     renderAll();
   }
 

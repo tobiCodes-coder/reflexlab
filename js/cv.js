@@ -210,6 +210,7 @@
       'Personal Best: ' + (CVD.data.pb || level) + ' (' + r.cat + ')\n' +
       'Try it: https://reflexlab.tobiascent.workers.dev/tests/color-vision/color-vision.html';
 
+    submitScore("color-vision", level);
     renderAll();
   }
 

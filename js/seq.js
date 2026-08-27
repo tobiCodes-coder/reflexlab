@@ -247,6 +247,7 @@
       'Personal Best: ' + (SQD.data.pb || longest) + ' (' + r.cat + ')\n' +
       'Try it: https://reflexlab.tobiascent.workers.dev/tests/sequence-memory/sequence-memory.html';
 
+    submitScore("sequence-memory", longest);
     renderAll();
   }
 

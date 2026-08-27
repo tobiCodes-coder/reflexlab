@@ -196,6 +196,7 @@
     againBtn.classList.remove('hidden');
     shareBtn.classList.remove('hidden');
     lastShare = buildShare(avg, best);
+    submitScore("reaction", avg || best);
     renderAll();
   }
 
