@@ -108,3 +108,12 @@
 
 /* Link-button e underline bad */
 .btn { text-decoration: none; }
+/* guides section */
+.guides{margin-top:56px}
+.section-title{font-size:28px;font-weight:700;margin-bottom:4px}
+.section-sub{color:var(--text-muted,#666);margin-bottom:24px}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.guide-card{display:block;padding:20px;border-radius:12px;border:1px solid var(--border,#e5e8ef);background:var(--card,#fff);color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
+.guide-card:hover{border-color:var(--primary,#6366f1);transform:translateY(-2px)}
+.guide-card h3{font-size:16px;margin:0 0 6px}
+.guide-card p{font-size:14px;color:var(--text-muted,#666);margin:0;line-height:1.5}
